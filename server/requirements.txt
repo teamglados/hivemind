@@ -1,3 +1,6 @@
-SQLAlchemy
+SQLAlchemy==1.4.0b1
+sqlalchemy-filters==0.3.0
+SQLAlchemy-Searchable==1.2.0
 pydantic
 starlette
+asyncpg
