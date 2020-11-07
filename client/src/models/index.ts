@@ -4,6 +4,7 @@ import { createHook } from "overmind-react";
 import * as api from "../utils/api";
 import * as user from "./user";
 import * as question from "./question";
+import * as hint from "./hint";
 import { onInitialize } from "./init";
 
 export const config = {
@@ -11,10 +12,12 @@ export const config = {
   state: {
     user: user.state,
     question: question.state,
+    hint: hint.state,
   },
   actions: {
     user: user.actions,
     question: question.actions,
+    hint: hint.actions,
   },
   effects: {
     api,

@@ -1,27 +1,62 @@
-import { AsyncAction } from "overmind";
-import { Question, RequestState } from "./types";
+import { Action, AsyncAction } from "overmind";
+import { AnswerState, Question, RequestState } from "./types";
 
 type State = {
   questions: Question[];
-  fetchState: RequestState;
+  answerState: AnswerState;
+  getQuestions: RequestState;
+  answerQuestion: RequestState;
 };
 
 export const state: State = {
   questions: [],
-  fetchState: RequestState.INITIAL,
+  answerState: AnswerState.INITIAL,
+  getQuestions: RequestState.INITIAL,
+  answerQuestion: RequestState.INITIAL,
 };
 
 const getQuestions: AsyncAction = async ({ state, effects }) => {
-  state.question.fetchState = RequestState.PENDING;
-  try {
-    const data = await effects.api.getQuestions();
+  state.question.getQuestions = RequestState.PENDING;
+  const data = await effects.api.getQuestions();
+
+  if (!data.error) {
     state.question.questions = data.result;
-    state.question.fetchState = RequestState.SUCCESS;
-  } catch (error) {
-    state.question.fetchState = RequestState.ERROR;
+    state.question.getQuestions = RequestState.SUCCESS;
+  } else {
+    state.question.getQuestions = RequestState.ERROR;
   }
+};
+
+const answerQuestion: AsyncAction<{ id: number; answer: string }> = async (
+  { state, effects },
+  { id, answer }
+) => {
+  state.question.answerQuestion = RequestState.PENDING;
+  state.question.answerState = AnswerState.INITIAL;
+
+  const data = await effects.api.answerQuestion({ id, answer });
+
+  if (!data.error) {
+    const index = state.question.questions.findIndex(
+      (q) => q.id === data.result.id
+    );
+
+    state.question.questions[index] = data.result;
+    state.question.answerState = data.result.is_correct
+      ? AnswerState.CORRECT
+      : AnswerState.INCORRECT;
+    state.question.answerQuestion = RequestState.SUCCESS;
+  } else {
+    state.question.answerQuestion = RequestState.ERROR;
+  }
+};
+
+const setAnswerState: Action<AnswerState> = ({ state }, answerState) => {
+  state.question.answerState = answerState;
 };
 
 export const actions = {
   getQuestions,
+  answerQuestion,
+  setAnswerState,
 };

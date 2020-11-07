@@ -11,6 +11,7 @@ type Props = {
   onSubmit: any;
   buttonLabel: string;
   buttonIcon: React.ReactNode;
+  buttonLoading?: boolean;
 };
 
 const Textarea = ({
@@ -19,6 +20,7 @@ const Textarea = ({
   onChange,
   buttonLabel,
   buttonIcon,
+  buttonLoading = false,
 }: Props) => {
   const [focused, setFocused] = React.useState(false);
   const inputRef = useInputFocusMount();
@@ -38,6 +40,7 @@ const Textarea = ({
         type="submit"
         variant="primary"
         disabled={value.length === 0}
+        loading={buttonLoading}
         onClick={onSubmit}
         icon={buttonIcon}
       >

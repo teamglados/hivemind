@@ -5,11 +5,20 @@ import { motion } from "framer-motion";
 import useWindowSize from "react-use/lib/useWindowSize";
 import Confetti from "react-confetti";
 import { IoIosCheckmarkCircle } from "react-icons/io";
+import useMount from "react-use/lib/useMount";
 
 import { Text } from "./common";
 
-const CorrectAnswer = () => {
+type Props = {
+  onReadyToClose: any;
+};
+
+const CorrectAnswer = ({ onReadyToClose }: Props) => {
   const { width, height } = useWindowSize();
+
+  useMount(() => {
+    setTimeout(onReadyToClose, 4000);
+  });
 
   return (
     <Wrapper>

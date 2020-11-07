@@ -33,7 +33,7 @@ const Sidebar = () => {
               <Text variant="overline">Exercises</Text>
 
               <ExerciseList>
-                {range(7).map((index) => (
+                {range(5).map((index) => (
                   <ExerciseItem key={index} active={index === 2}>
                     <Text
                       variant="button-text"
