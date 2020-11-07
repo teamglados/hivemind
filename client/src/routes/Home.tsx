@@ -3,54 +3,78 @@ import { Stack } from "styled-layout";
 import styled, { DefaultTheme, keyframes } from "styled-components";
 import { BsArrowRight } from "react-icons/bs";
 import { FiAward } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 import { range, randBetween } from "../utils/common";
 import { Button, Text } from "../components/common";
 
 const Home = () => {
-  const openQuestion = (i: number) => {
-    console.log("> Open question", i);
+  const navigate = useNavigate();
+
+  const listVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 24 },
+    show: { opacity: 1, y: 0 },
   };
 
   return (
     <Stack spacing="medium" axis="y">
       <Text variant="title-2">Exercise questions</Text>
 
-      {range(5).map((i) => (
-        <QuestionCard key={i}>
-          <Stack axis="x">
-            <QuestionCardContent axis="y" spacing="normal">
-              <Text variant="title-3">Question {i + 1}</Text>
-              <Text variant="body">
-                Monetization success rockstar pivot angel...
-              </Text>
-            </QuestionCardContent>
+      <Stack
+        spacing="medium"
+        axis="y"
+        as={motion.div}
+        variants={listVariants}
+        initial="hidden"
+        animate="show"
+      >
+        {range(5).map((i) => (
+          <QuestionCard key={i} as={motion.div} variants={itemVariants}>
+            <Stack axis="x">
+              <QuestionCardContent axis="y" spacing="normal">
+                <Text variant="title-3">Question {i + 1}</Text>
+                <Text variant="body">
+                  Monetization success rockstar pivot angel...
+                </Text>
+              </QuestionCardContent>
 
-            <QuestionScore deg={randBetween(0, 360)}>
-              <Stack axis="y" spacing="medium">
-                <Stack axis="y" spacing="xxsmall">
-                  <Text variant="overline" color="white">
-                    Reward
-                  </Text>
-                  <Stack axis="x" spacing="xsmall" align="center">
-                    <Text variant="title-2" color="white">
-                      20
+              <QuestionScore deg={randBetween(0, 360)}>
+                <Stack axis="y" spacing="medium">
+                  <Stack axis="y" spacing="xxsmall">
+                    <Text variant="overline" color="white">
+                      Reward
                     </Text>
-                    <FiAward size={32} color="#fff" />
+                    <Stack axis="x" spacing="xsmall" align="center">
+                      <Text variant="title-2" color="white">
+                        20
+                      </Text>
+                      <FiAward size={32} color="#fff" />
+                    </Stack>
                   </Stack>
+                  <Button
+                    onClick={() => navigate(`/questions/${i}`)}
+                    variant="white"
+                    icon={<BsArrowRight size={24} />}
+                  >
+                    View
+                  </Button>
                 </Stack>
-                <Button
-                  onClick={() => openQuestion(i)}
-                  variant="white"
-                  icon={<BsArrowRight size={24} />}
-                >
-                  View
-                </Button>
-              </Stack>
-            </QuestionScore>
-          </Stack>
-        </QuestionCard>
-      ))}
+              </QuestionScore>
+            </Stack>
+          </QuestionCard>
+        ))}
+      </Stack>
     </Stack>
   );
 };
