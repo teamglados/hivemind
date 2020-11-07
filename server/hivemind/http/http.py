@@ -24,22 +24,7 @@ def get_request_origin(request):
         else:
             return request.ip
 
-def get_json_string(obj, pretty=False):
-    '''
-    Returns json string from object of serializable type.
 
-    @param obj: Serializable object
-    @param pretty: If true, will return pretty json
-    '''
-    def converter(o):
-        if isinstance(o, datetime):
-            return o.isoformat(timespec='milliseconds')
-        if isinstance(o, timedelta):
-            return o.total_seconds()
-        return o.__str__()
-    if pretty is True:
-        return json.dumps(obj, indent=2, sort_keys=True, default=converter)
-    return json.dumps(obj, default=converter)
 
 def get_api_response(request, **kwargs):
     return {
@@ -53,6 +38,7 @@ def get_api_response(request, **kwargs):
 def get_api_result_json(result):
     return sanic.response.HTTPResponse(
         get_json_string(result),
+        headers={'access-control-allow-origin': '*'},
         content_type='application/json'
     )
 

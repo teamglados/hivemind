@@ -1,13 +1,13 @@
 from datetime import datetime
 from datetime import timedelta
 import jwt
+import json
+from hivemind.config import JWT_SECRET
 
-def jwt_encode(payload, secret=None):
-    return jwt.encode(
-        payload,
-        secret,
-        algorithm='HS256'
-    ).decode('utf-8')
+_JWT_SECRET = str(JWT_SECRET)
+
+def jwt_encode(payload, secret=_JWT_SECRET):
+    return jwt.encode(json.loads(get_json_string(payload)), secret, algorithm='HS256').decode('utf-8')
 
 def jwt_decode(token, secret=None):
     return jwt.decode(
@@ -31,3 +31,20 @@ def jwt_auth_validate(token, scope, secret=None):
     assert date_now() < date_from_timestamp(decoded.get('expiry')), (
         f'token is expired'
     )
+
+def get_json_string(obj, pretty=False):
+    '''
+    Returns json string from object of serializable type.
+
+    @param obj: Serializable object
+    @param pretty: If true, will return pretty json
+    '''
+    def converter(o):
+        if isinstance(o, datetime):
+            return o.isoformat(timespec='milliseconds')
+        if isinstance(o, timedelta):
+            return o.total_seconds()
+        return o.__str__()
+    if pretty is True:
+        return json.dumps(obj, indent=2, sort_keys=True, default=converter)
+    return json.dumps(obj, default=converter)
