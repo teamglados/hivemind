@@ -1,0 +1,6 @@
+/cloud/init
+provider.tf
+vars.tf
+terraform.tfstate
+terraform.tfstate.backup
+.terraform
