@@ -163,7 +163,7 @@ async def get_user(conn, user_id):
         await conn.execute(
             User.update()
             .where(users.c.id == user_id)
-            .values(active_question_last_active=None)
+            .values(active_question_last_active=None, active_question_id=None)
         )
         user["active_question_last_active"] = None
     # TODO calc score
