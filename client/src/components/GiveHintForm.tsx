@@ -19,7 +19,7 @@ const GiveHintForm = ({ onHintSubmit }: Props) => {
   };
 
   return (
-    <Wrapper>
+    <Wrapper as={motion.div} exit={{ opacity: 0 }}>
       <Content
         as={motion.div}
         layoutId="card-background"

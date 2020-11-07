@@ -9,6 +9,7 @@ import { BackButton, Text, Textarea } from "../components/common";
 import Hints from "../components/Hints";
 import CorrectAnswer from "../components/CorrectAnswer";
 import GiveHintForm from "../components/GiveHintForm";
+import HintStory from "../components/HintStory";
 
 enum AnswerState {
   INITIAL = "INITIAL",
@@ -17,11 +18,19 @@ enum AnswerState {
   GIVE_HINT = "GIVE_HINT",
 }
 
+type Hint = {
+  gradientDeg: number;
+  i: number;
+};
+
 const Question = () => {
+  const [activeHint, setActiveHint] = React.useState<null | Hint>(null);
+
   const [answer, setAnswer] = React.useState("");
   const [answerState, setAnswerState] = React.useState<AnswerState>(
     AnswerState.INITIAL
   );
+
   const params = useParams();
   const navigate = useNavigate();
 
@@ -45,6 +54,11 @@ const Question = () => {
     }, 1000);
   };
 
+  const handleHintReaction = (reaction: 0 | 1 | -1) => {
+    console.log("> Reaction", reaction);
+    setActiveHint(null);
+  };
+
   return (
     <AnimateSharedLayout>
       <Stack axis="y" spacing="small">
@@ -55,7 +69,7 @@ const Question = () => {
 
           <Stack axis="y" spacing="small">
             <Text variant="overline">Hints</Text>
-            <Hints />
+            <Hints onHintClick={setActiveHint} />
           </Stack>
 
           <Stack axis="y" spacing="small">
@@ -93,6 +107,18 @@ const Question = () => {
       <AnimatePresence>
         {answerState === AnswerState.GIVE_HINT && (
           <GiveHintForm onHintSubmit={submitHint} />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {activeHint && (
+          <HintStory
+            key={activeHint.i}
+            hint={activeHint}
+            onNegativeAction={() => handleHintReaction(-1)}
+            onPositiveAction={() => handleHintReaction(1)}
+            onCancel={() => handleHintReaction(0)}
+          />
         )}
       </AnimatePresence>
     </AnimateSharedLayout>

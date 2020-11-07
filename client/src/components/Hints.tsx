@@ -5,7 +5,11 @@ import { motion } from "framer-motion";
 
 import { randBetween, range } from "../utils/common";
 
-const Hints = () => {
+type Props = {
+  onHintClick: any;
+};
+
+const Hints = ({ onHintClick }: Props) => {
   const listVariants = {
     hidden: { opacity: 0 },
     show: {
@@ -30,21 +34,28 @@ const Hints = () => {
       initial="hidden"
       animate="show"
     >
-      {range(5).map((i) => (
-        <Story
-          key={i}
-          deg={randBetween(0, 360)}
-          as={motion.div}
-          variants={itemVariants}
-        >
-          <StoryContent />
-        </Story>
-      ))}
+      {range(5).map((_, i) => {
+        const deg = randBetween(0, 360);
+
+        return (
+          <Story
+            key={i}
+            deg={deg}
+            as={motion.div}
+            layoutId={`story-background-${i}`}
+            variants={itemVariants}
+            onClick={() => onHintClick({ gradientDeg: deg, i })}
+          >
+            <StoryContent />
+          </Story>
+        );
+      })}
     </Stack>
   );
 };
 
-const Story = styled.div<{ deg: number }>`
+const Story = styled.button<{ deg: number }>`
+  cursor: pointer;
   width: 56px;
   height: 56px;
   border-radius: 50%;
@@ -55,6 +66,10 @@ const Story = styled.div<{ deg: number }>`
     ${(p) => p.theme.colors.secondary},
     ${(p) => p.theme.colors.primary}
   );
+
+  &:hover {
+    filter: brightness(1.1);
+  }
 `;
 
 const StoryContent = styled.div`
@@ -62,9 +77,7 @@ const StoryContent = styled.div`
   height: 100%;
   border-radius: inherit;
   background-color: rgba(255, 255, 255, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  position: relative;
 `;
 
 export default React.memo(Hints);
