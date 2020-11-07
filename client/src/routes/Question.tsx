@@ -1,78 +1,101 @@
 import * as React from "react";
 import { Stack } from "styled-layout";
 import styled from "styled-components";
-import TextareaAutosize from "react-textarea-autosize";
 import { IoIosSend } from "react-icons/io";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { AnimatePresence, AnimateSharedLayout } from "framer-motion";
 
-import { BackButton, Button, Text } from "../components/common";
+import { BackButton, Text, Textarea } from "../components/common";
 import Hints from "../components/Hints";
-import { useInputFocusMount } from "../utils/hooks";
+import CorrectAnswer from "../components/CorrectAnswer";
+import GiveHintForm from "../components/GiveHintForm";
+
+enum AnswerState {
+  INITIAL = "INITIAL",
+  CORRECT = "CORRECT",
+  INCORRECT = "INCORRECT",
+  GIVE_HINT = "GIVE_HINT",
+}
 
 const Question = () => {
   const [answer, setAnswer] = React.useState("");
-  const [focused, setFocused] = React.useState(false);
-  const inputRef = useInputFocusMount();
+  const [answerState, setAnswerState] = React.useState<AnswerState>(
+    AnswerState.INITIAL
+  );
   const params = useParams();
+  const navigate = useNavigate();
 
   const submitAnswer = (event: any) => {
     event.preventDefault();
-    console.log("> Submit");
+
+    if (answer.length > 0 && answerState === AnswerState.INITIAL) {
+      setAnswerState(AnswerState.CORRECT);
+
+      setTimeout(() => {
+        setAnswerState(AnswerState.GIVE_HINT);
+      }, 4000);
+    }
+  };
+
+  const submitHint = (hint: string) => {
+    console.log("> Hint", hint);
+    setAnswerState(AnswerState.INITIAL);
+    setTimeout(() => {
+      navigate("/home");
+    }, 1000);
   };
 
   return (
-    <Stack axis="y" spacing="small">
-      <BackButton to="/home" />
+    <AnimateSharedLayout>
+      <Stack axis="y" spacing="small">
+        <BackButton to="/home" />
 
-      <Stack axis="y" spacing="xlarge">
-        <Text variant="title-1">Question {Number(params.i) + 1}</Text>
+        <Stack axis="y" spacing="xlarge">
+          <Text variant="title-1">Question {Number(params.i) + 1}</Text>
 
-        <Stack axis="y" spacing="small">
-          <Text variant="overline">Hints</Text>
-          <Hints />
-        </Stack>
+          <Stack axis="y" spacing="small">
+            <Text variant="overline">Hints</Text>
+            <Hints />
+          </Stack>
 
-        <Stack axis="y" spacing="small">
-          <Text variant="overline">Question</Text>
+          <Stack axis="y" spacing="small">
+            <Text variant="overline">Question</Text>
 
-          <QuestionCard>
-            <Stack axis="y" spacing="large">
-              <Text variant="body">
-                Twitter non-disclosure agreement vesting period user experience
-                direct mailing channels iPad social media interaction design
-                return on investment. Network effects success technology alpha
-                angel investor startup.
-              </Text>
+            <QuestionCard>
+              <Stack axis="y" spacing="large">
+                <Text variant="body">
+                  Twitter non-disclosure agreement vesting period user
+                  experience direct mailing channels iPad social media
+                  interaction design return on investment. Network effects
+                  success technology alpha angel investor startup.
+                </Text>
 
-              <AnswerForm onSubmit={submitAnswer} focused={focused}>
-                <AnswerField
-                  ref={inputRef}
+                <Textarea
+                  onSubmit={submitAnswer}
                   value={answer}
-                  onChange={(e) => setAnswer(e.target.value)}
-                  onFocus={() => setFocused(true)}
-                  onBlur={() => setFocused(false)}
-                  minRows={3}
-                  maxRows={6}
-                />
-                <Button
-                  type="submit"
-                  onClick={submitAnswer}
-                  variant="primary"
-                  icon={
+                  onChange={setAnswer}
+                  buttonLabel="Submit answer"
+                  buttonIcon={
                     <IoIosSend
                       size={24}
                       style={{ transform: "rotate(15deg)" }}
                     />
                   }
-                >
-                  Submit answer
-                </Button>
-              </AnswerForm>
-            </Stack>
-          </QuestionCard>
+                />
+              </Stack>
+            </QuestionCard>
+          </Stack>
         </Stack>
       </Stack>
-    </Stack>
+
+      {answerState === AnswerState.CORRECT && <CorrectAnswer />}
+
+      <AnimatePresence>
+        {answerState === AnswerState.GIVE_HINT && (
+          <GiveHintForm onHintSubmit={submitHint} />
+        )}
+      </AnimatePresence>
+    </AnimateSharedLayout>
   );
 };
 
@@ -82,30 +105,6 @@ const QuestionCard = styled.div`
   box-shadow: ${(p) => p.theme.shadows.normal};
   padding: ${(p) => p.theme.spacing.medium};
   max-width: 600px;
-`;
-
-const AnswerForm = styled.form<{ focused: boolean }>`
-  display: flex;
-  flex-direction: column;
-  border-radius: ${(p) => p.theme.radii.medium};
-  padding: ${(p) => p.theme.spacing.small};
-  background-color: ${(p) => p.theme.colors["grey-200"]};
-  border: 1px solid
-    ${(p) =>
-      p.focused ? p.theme.colors["grey-300"] : p.theme.colors["grey-200"]};
-
-  button {
-    align-self: flex-end;
-  }
-`;
-
-const AnswerField = styled(TextareaAutosize)`
-  appearance: none;
-  border: none;
-  resize: none;
-  background: transparent;
-  padding: ${(p) => p.theme.spacing.small};
-  ${(p) => p.theme.typography.body}
 `;
 
 export default Question;
