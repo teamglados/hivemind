@@ -43,12 +43,14 @@ const Text: React.FC<Props> = ({
 };
 
 const variantToTag: { [key in Typography]: Partial<Tags> } = {
+  "large-title": "h1",
   "title-1": "h1",
   "title-2": "h2",
   "title-3": "h3",
-  overline: "span",
   body: "p",
   "body-small": "p",
+  overline: "span",
+  "button-text": "span",
 };
 
 const TextBase = styled.span<TransientProps>`
