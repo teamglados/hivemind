@@ -3,6 +3,7 @@ from hivemind.services import *
 from hivemind.config import *
 from hivemind.test import *
 import asyncio
+from sqlalchemy.sql import select
 
 app = create_api_app(public=('/ping', '/test', '/login' ))
 
@@ -24,16 +25,16 @@ async def api_method_ping(request):
 @app.route('/test', methods=['GET', 'POST'])
 async def api_method_test(request):
     query = users.insert().values(name=request.ctx.params.get('name'))
-    async with engine.connect() as conn:
-        result = await conn.execute(query)
-        return result.fetchall()
+    await request.ctx.conn.execute(query)
+    result = await request.ctx.conn.execute(select(users).where(users.c.name == "ville"))
+    return result.fetchall()
 
 @app.route('/login', methods=['GET', 'POST'])
 @app.limiter('1 per second')
 async def api_method_auth(request):
     await asyncio.sleep(1)
     name = request.ctx.params.get('name')
-    user = dict()
+
     token = jwt_auth_create(scopes=[
         '/question',
         '/question/list',
