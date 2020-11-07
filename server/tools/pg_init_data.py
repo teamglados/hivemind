@@ -1,4 +1,4 @@
-from sqlalchemy.sql import select
+from sqlalchemy.sql import select, text
 from sqlalchemy import MetaData
 import argparse
 import asyncio
@@ -28,7 +28,7 @@ async def pg_init_tables():
         await conn.run_sync(metadata.create_all)
 
 async def pg_init_tables_data(dummy_data_dict):
-    """ initialize table data """ 
+    """ initialize table data """
     async with engine.connect() as conn:
 
         await conn.execute(
@@ -45,12 +45,12 @@ async def pg_init_tables_data(dummy_data_dict):
             Hint.insert(),
             dummy_data_dict.get('hints')
         )
-        
+
         await conn.execute(
             HintItem.insert(),
             dummy_data_dict.get('hint_items')
         )
-        
+
         await conn.execute(
             DiscussionItem.insert(),
             dummy_data_dict.get('discussion_items')
@@ -66,7 +66,9 @@ async def pg_init_tables_data(dummy_data_dict):
         #    User.insert().returning(User.c.id), [{"name": "some name 1"}],
         #)
         #user_id = result.fetchone()[0]
-
+        for table_seq_name in ["answer_id_seq", "discussion_item_id_seq", "hint_id_seq", "hint_item_id_seq", "message_id_seq", "question_id_seq", "user_id_seq"]:
+            sql_query = text(f"ALTER SEQUENCE {table_seq_name} RESTART WITH 1000;")
+            await conn.execute(sql_query)
         await conn.commit()
         return
 
@@ -93,5 +95,5 @@ if __name__ == "__main__":
     if args.dummy:
         with open(args.dummy, "r") as jsonfile:
             dummy_data_dict = json.load(jsonfile)
-    
+
     asyncio.run(pg_run_all(dummy_data_dict))
