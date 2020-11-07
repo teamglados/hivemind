@@ -1,5 +1,5 @@
 from hivemind.http.http import *
-from hivemind.services import *
+from hivemind.services import services
 from hivemind.config import *
 import asyncio
 from sqlalchemy.sql import select
@@ -23,10 +23,8 @@ async def api_method_ping(request):
 
 @app.route('/test', methods=['GET', 'POST'])
 async def api_method_test(request):
-    query = User.insert().values(name=request.ctx.params.get('name'))
-    await request.ctx.conn.execute(query)
-    result = await request.ctx.conn.execute(select(User).where(User.c.name == "ville"))
-    return result.fetchall()
+    result = await services.get_questions(request.ctx.conn, int(request.ctx.params.get('user_id')))
+    return result
 
 @app.route('/login', methods=['GET', 'POST'])
 @app.limiter('1 per second')
@@ -35,44 +33,21 @@ async def api_method_auth(request):
     name = request.ctx.params.get('name')
 
     token = jwt_auth_create(scopes=[
-        '/question',
-        '/question/list',
-        '/question/update'
+        '/questions',
     ], data=dict(
         name=user.name,
         uid=user.id
     ))
     return token
 
-@app.route('/question', methods=['GET'])
+@app.route('/questions', methods=['GET'])
 async def api_method_question(request):
-    raise NotImplementedError(
-        'the requested API method is not implemented'
+    questions = await services.get_questions(
+        request.ctx.conn,
+        int(request.ctx.params.get('user_id'))
     )
+    return questions
 
-@app.route('/question/list', methods=['GET'])
-async def api_method_question_list(request):
-    raise NotImplementedError(
-        'the requested API method is not implemented'
-    )
-
-@app.route('/question/update', methods=['POST'])
-async def api_method_question_update(request):
-    raise NotImplementedError(
-        'the requested API method is not implemented'
-    )
-
-@app.route('/answer/create', methods=['POST'])
-async def api_method_answer_create(request):
-    raise NotImplementedError(
-        'the requested API method is not implemented'
-    )
-
-@app.route('/message/create', methods=['POST'])
-async def api_method_message_create(request):
-    raise NotImplementedError(
-        'the requested API method is not implemented'
-    )
 
 if __name__ == '__main__':
     app.run(
