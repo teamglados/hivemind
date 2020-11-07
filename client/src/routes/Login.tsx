@@ -8,21 +8,44 @@ import { Text, GradientText, Button } from "../components/common";
 import { useAppState } from "../models";
 import { sleep } from "../utils/common";
 import { useInputFocusMount } from "../utils/hooks";
+import { motion } from "framer-motion";
 
 const Login = () => {
   const [user, setUser] = React.useState("");
   const [isLoggingIn, setLoggingIn] = React.useState(false);
   const [focused, setFocused] = React.useState(false);
+
+  const { state } = useAppState();
   const inputRef = useInputFocusMount();
   const { actions } = useAppState();
   const navigate = useNavigate();
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.7,
+      },
+    },
+  };
+
+  const logoVariants = {
+    hidden: { opacity: 0, y: 48 },
+    show: { opacity: 1, y: 0 },
+  };
+
+  const formVariants = {
+    hidden: { opacity: 0 },
+    show: { opacity: 1 },
+  };
 
   const login = async (event: any) => {
     event.preventDefault();
 
     // Fake out API call to show spinner
     setLoggingIn(true);
-    await sleep(2000);
+    await sleep(1000);
 
     if (user) {
       setLoggingIn(false);
@@ -30,50 +53,66 @@ const Login = () => {
     }
   };
 
+  React.useEffect(() => {
+    if (state.user.name) {
+      navigate("/home");
+    }
+  }, [state.user.name, navigate]);
+
   return (
-    <WrapperStack axis="y" spacing="xlarge" align="center" justify="center">
-      <LogoStack axis="y" spacing="small" justify="center" align="center">
+    <Stack
+      axis="y"
+      spacing="xlarge"
+      align="center"
+      justify="center"
+      as={motion.div}
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+      style={{ height: "100%", width: "100%" }}
+    >
+      <Stack
+        axis="y"
+        spacing="small"
+        justify="center"
+        align="center"
+        as={motion.div}
+        variants={logoVariants}
+      >
         <Logo src={logo} alt="logo" />
         <GradientText variant="large-title">HiveMind</GradientText>
-      </LogoStack>
+      </Stack>
 
-      <ContentStack axis="y" spacing="large">
-        <Text variant="title-3" align="center">
-          What's you name?
-        </Text>
+      <motion.div variants={formVariants}>
+        <ContentStack axis="y" spacing="large">
+          <Text variant="title-3" align="center">
+            What's your name?
+          </Text>
 
-        <Form onSubmit={login} focused={focused}>
-          <Stack axis="x" align="center">
-            <Input
-              ref={inputRef}
-              onChange={(e) => setUser(e.target.value)}
-              onFocus={() => setFocused(true)}
-              onBlur={() => setFocused(false)}
-            />
-            <Button
-              onClick={login}
-              variant="primary"
-              disabled={user.length === 0}
-              loading={isLoggingIn}
-              type="submit"
-            >
-              Submit
-            </Button>
-          </Stack>
-        </Form>
-      </ContentStack>
-    </WrapperStack>
+          <Form onSubmit={login} focused={focused}>
+            <Stack axis="x" align="center">
+              <Input
+                ref={inputRef}
+                onChange={(e) => setUser(e.target.value)}
+                onFocus={() => setFocused(true)}
+                onBlur={() => setFocused(false)}
+              />
+              <Button
+                onClick={login}
+                variant="primary"
+                disabled={user.length === 0}
+                loading={isLoggingIn}
+                type="submit"
+              >
+                Submit
+              </Button>
+            </Stack>
+          </Form>
+        </ContentStack>
+      </motion.div>
+    </Stack>
   );
 };
-
-const WrapperStack = styled(Stack)`
-  height: 100%;
-  width: 100%;
-`;
-
-const LogoStack = styled(Stack)`
-  margin-top: -${(p) => p.theme.spacing.xxlarge};
-`;
 
 const Logo = styled.img`
   width: 80px;

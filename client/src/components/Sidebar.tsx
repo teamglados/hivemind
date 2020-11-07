@@ -1,22 +1,27 @@
 import React from "react";
 import styled from "styled-components";
-import { Stack } from "styled-layout";
-import { FiAward } from "react-icons/fi";
+import { Stack, Divider } from "styled-layout";
+import { FiAward, FiLogOut } from "react-icons/fi";
 
 import logo from "../images/logo.svg";
 import { range } from "../utils/common";
-import { GradientText, Text } from "./common";
+import { Button, GradientText, Text } from "./common";
 import theme from "../constants/theme";
+import { useAppState } from "../models";
 
 const Sidebar = () => {
+  const { actions } = useAppState();
+
   return (
     <Wrapper>
-      <Content axis="y" spacing="none" justify="space-between">
-        <Stack axis="y" spacing="large">
+      <Content axis="y" spacing="none">
+        <Stack axis="y" spacing="large" style={{ flex: 1 }}>
           <LogoStack axis="x" spacing="xsmall" align="center" justify="center">
             <Logo src={logo} />
             <GradientText variant="title-2">HiveMind</GradientText>
           </LogoStack>
+
+          <Divider size="large" color="grey-200" />
 
           <Stack axis="y" spacing="xlarge">
             <Stack axis="y" spacing="normal">
@@ -43,7 +48,9 @@ const Sidebar = () => {
           </Stack>
         </Stack>
 
-        <ScoreStack axis="y" spacing="small">
+        <Divider size="large" color="grey-200" />
+
+        <Stack axis="y" spacing="small">
           <Text variant="overline">Your course score</Text>
 
           <Stack axis="x" spacing="xsmall" align="center">
@@ -55,7 +62,20 @@ const Sidebar = () => {
             <GradientText variant="title-3">+55</GradientText>
             <Text variant="body-small">from hints you have submitted</Text>
           </Stack>
-        </ScoreStack>
+        </Stack>
+
+        <Divider size="large" color="grey-200" />
+
+        <Stack axis="x" spacing="normal">
+          <Button
+            variant="dimmed"
+            size="small"
+            onClick={() => actions.user.logout()}
+            icon={<FiLogOut size={16} />}
+          >
+            Logout
+          </Button>
+        </Stack>
       </Content>
     </Wrapper>
   );
@@ -70,15 +90,8 @@ const Content = styled(Stack)`
   height: 100%;
 `;
 
-const ScoreStack = styled(Stack)`
-  padding-top: ${(p) => p.theme.spacing.medium};
-  border-top: 1px solid ${(p) => p.theme.colors["grey-200"]};
-`;
-
 const LogoStack = styled(Stack)`
   padding-top: ${(p) => p.theme.spacing.large};
-  padding-bottom: ${(p) => p.theme.spacing.xlarge};
-  border-bottom: 1px solid ${(p) => p.theme.colors["grey-200"]};
 `;
 
 const Logo = styled.img`
