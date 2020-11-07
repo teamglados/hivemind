@@ -15,49 +15,49 @@
 	"messages": [
 		{
 			"id": 1,
-			"discussion_id": "discussion1",
+			"discussion_id": "4abbb6857bbd49baa2940060eadacb51",
 			"user_id": 3,
 			"value": "Can't believe I'm stuck at first question... Do you have any ideas?",
 			"score": 0
 		},
 		{
 			"id": 2,
-			"discussion_id": "discussion1",
+			"discussion_id": "4abbb6857bbd49baa2940060eadacb51",
 			"user_id": 4,
 			"value": "Not yet, but considering looking at hints. How to approach this problem?",
 			"score": 0
 		},
 		{
 			"id": 3,
-			"discussion_id": "discussion1",
+			"discussion_id": "4abbb6857bbd49baa2940060eadacb51",
 			"user_id": 3,
 			"value": "Is the key to the answer in the letters? hmm",
 			"score": 0
 		},
 		{
 			"id": 4,
-			"discussion_id": "discussion2",
+			"discussion_id": "4abbb6857bbd49baa2940060eadacb52",
 			"user_id": 2,
 			"value": "I was trying to list possible body parts in my head but I don't understand this",
 			"score": 0
 		},
 		{
 			"id": 5,
-			"discussion_id": "discussion2",
+			"discussion_id": "4abbb6857bbd49baa2940060eadacb52",
 			"user_id": 7,
 			"value": "Hmm... Yeah. Eye don't think I know how to approach this...",
 			"score": 1
 		},
 		{
 			"id": 6,
-			"discussion_id": "discussion2",
+			"discussion_id": "4abbb6857bbd49baa2940060eadacb52",
 			"user_id": 2,
 			"value": "Wait... You said it! Thanks!",
 			"score": 0
 		},
 		{
 			"id": 7,
-			"discussion_id": "discussion2",
+			"discussion_id": "4abbb6857bbd49baa2940060eadacb52",
 			"user_id": 7,
 			"value": "Said what?",
 			"score": 0
@@ -66,28 +66,28 @@
 	"discussion_items": [
 		{
 			"id": 1,
-			"discussion_id": "discussion1",
+			"discussion_id": "4abbb6857bbd49baa2940060eadacb51",
 			"question_id": 1,
 			"user_id": 3,
 			"score": 0
 		},
 		{
 			"id": 2,
-			"discussion_id": "discussion1",
+			"discussion_id": "4abbb6857bbd49baa2940060eadacb51",
 			"question_id": 1,
 			"user_id": 4,
 			"score": 0
 		},
 		{
 			"id": 3,
-			"discussion_id": "discussion2",
+			"discussion_id": "4abbb6857bbd49baa2940060eadacb52",
 			"question_id": 3,
 			"user_id": 2,
 			"score": 0
 		},
 		{
 			"id": 4,
-			"discussion_id": "discussion2",
+			"discussion_id": "4abbb6857bbd49baa2940060eadacb52",
 			"question_id": 3,
 			"user_id": 7,
 			"score": 0
@@ -169,7 +169,7 @@
 		{
 			"id": 13,
 			"question": "What always runs but never walks, often murmurs, never talks, has a bed but never sleeps, has a mouth but never eats?",
-			"answers": "river",
+			"answer": "river",
 			"score": 20
 		},
 		{
@@ -181,7 +181,7 @@
 		{
 			"id": 15,
 			"question": "I never was, am always to be. No one ever saw me, nor ever will. And yet I am the confidence of all, to live and breath on this terrestrial ball. What am I?",
-			"answers": "future",
+			"answer": "future",
 			"score": 20
 		}
 	],
@@ -367,7 +367,7 @@
 			"value": "You will solve this eventually"
 		}
 	],
-	"hintitems": [
+	"hint_items": [
 		{
 			"hint_id": 1,
 			"user_id": 3,
