@@ -174,6 +174,33 @@ async def get_user(conn, user_id):
     return user
 
 
+async def create_discussion(conn, user_id, question_id):
+    discussion_id = uuid4()
+    await conn.execute(
+        DiscussionItem.insert()
+        .values(
+            score=1,
+            discussion_id=discussion_id,
+            question_id=question_id,
+            user_id=user_id,
+        )
+        .returning(User.c.id)
+    )
+    return discussion_id
+
+
 async def get_discussion_id(conn, user_id, question_id):
-    select(User).where()
-    pass
+    result = await conn.execute(
+        select([User.c.active_discussion_id])
+        .where(User.c.active_discussion_id != None)
+        .where(User.c.active_question_id == question_id)
+        .group_by(User.c.active_discussion_id)
+        .having(func.length(User.c.active_discussion_id) < 2)
+    )
+
+    result_row = result.fetchone()
+    if result_row:
+        return result_row.active_discussion_id
+    else:
+        return await create_discussion(conn, user_id, question_id)
+
