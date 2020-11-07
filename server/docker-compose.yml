@@ -5,14 +5,16 @@ services:
     image: postgres:12.4
     command: |
         -c synchronous_commit=off
-        -c effective_cache_size=1536MB
-        -c maintenance_work_mem=128MB
-        -c work_mem=512kB
-        -c max_connections=1024
-        -c max_worker_processes=2
-        -c max_parallel_workers_per_gather=1
-        -c max_parallel_workers=2
+        -c effective_cache_size=12GB
+        -c maintenance_work_mem=1GB
+        -c shared_buffers=4GB
+        -c work_mem=1MB
+        -c max_connections=2048
+        -c max_worker_processes=4
+        -c max_parallel_workers_per_gather=2
+        -c max_parallel_workers=4
         -c min_wal_size=1GB
+        -c max_wal_size=4GB
         -c wal_buffers=16MB
         -c effective_io_concurrency=200
         -c checkpoint_completion_target=0.7
