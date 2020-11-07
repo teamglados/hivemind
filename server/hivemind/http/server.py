@@ -105,6 +105,12 @@ async def api_method_add_answer(request):
     return await services.add_answer(request.ctx.conn, user_id, question_id, value)
 
 
+@app.route("/users", methods=["GET"])
+async def api_method_get_user(request):
+    user_id = int(request.ctx.params.get("user_id"))
+    return await services.get_user(request.ctx.conn, user_id)
+
+
 if __name__ == "__main__":
     app.run(access_log=True, debug=True, host=HTTP_HOST, port=HTTP_PORT)
 

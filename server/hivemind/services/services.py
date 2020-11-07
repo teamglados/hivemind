@@ -24,14 +24,12 @@ def get_extended_question(question, answers):
     q_dict["answer_count"] = len(question_answers)
     return q_dict
 
+
 async def create_user(conn, name):
-    result = await conn.execute(
-        User.insert()
-        .values(name=user_id)
-        .returning(User.c.id)
-    )
+    result = await conn.execute(User.insert().values(name=user_id).returning(User.c.id))
 
     return result.fetchone()[0]
+
 
 def check_answer_correct(question, answer):
     return question.answer == answer.value
@@ -64,20 +62,25 @@ async def get_questions(conn, user_id):
 
 async def activate_question_for_user(conn, user_id, question_id):
     return await conn.execute(
-        User.update().values(
+        User.update()
+        .where(users.c.id == user_id)
+        .values(
             active_question_id=question_id,
             active_question_last_active=datetime.utcnow(),
         )
     )
 
 
+def get_active_threshold():
+    return datetime.utcnow() - timedelta(seconds=ACTIVE_THRESH_SECONDS)
+
+
 async def is_question_active_among_users(conn, user_id, question_id):
-    active_thresh = datetime.utcnow() - timedelta(seconds=ACTIVE_THRESH_SECONDS)
     results = await conn.execute(
         select(User)
         .where(User.c.active_question_id == question_id)
         .where(User.c.id != user_id)
-        .where(User.c.active_question_last_active >= active_thresh)
+        .where(User.c.active_question_last_active >= get_active_threshold())
     )
 
     ret = {"is_active": False}
@@ -149,3 +152,23 @@ async def get_question(conn, user_id, question_id):
     answers = result.fetchall()
 
     return get_extended_question(question, answers)
+
+
+async def get_user(conn, user_id):
+    result = await conn.execute(select(User).where(User.c.id == user_id))
+    user = result.fetchone()
+
+    user = dict(user)
+    if active_question_last_active < get_active_threshold():
+        await conn.execute(
+            User.update()
+            .where(users.c.id == user_id)
+            .values(active_question_last_active=None)
+        )
+        user["active_question_last_active"] = None
+    # TODO calc score
+    # - Max score from questions
+    # - Score from answers
+    # - Score from discussions
+    # - Score from hints
+    return user
