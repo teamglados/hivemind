@@ -18,6 +18,7 @@ const Layout = styled.div`
   height: 100vh;
   width: 100vw;
   max-width: 1400px;
+  min-width: 1000px;
   margin: 0 auto;
   display: flex;
   flex-direction: row;
@@ -25,14 +26,15 @@ const Layout = styled.div`
 
 const Navigation = styled.nav`
   width: 400px;
-  margin: ${(p) => p.theme.spacing.normal};
+  margin: ${(p) => p.theme.spacing.medium};
   background-color: #fff;
-  border-radius: ${(p) => p.theme.radii.normal};
+  border-radius: ${(p) => p.theme.radii.medium};
+  box-shadow: ${(p) => p.theme.shadows.normal};
 `;
 
 const Content = styled.main`
   flex: 1;
-  padding: ${(p) => p.theme.spacing.medium} ${(p) => p.theme.spacing.large};
+  padding: ${(p) => p.theme.spacing.large};
   max-height: 100vh;
   overflow: auto;
   -ms-overflow-style: none;

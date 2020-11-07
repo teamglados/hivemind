@@ -51,7 +51,7 @@ const theme: DefaultTheme = {
     `,
     "title-2": css`
       font-weight: 700;
-      font-size: 40px;
+      font-size: 36px;
       line-height: 1.2;
     `,
     "title-3": css`
