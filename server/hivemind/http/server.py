@@ -4,7 +4,7 @@ from hivemind.config import *
 import asyncio
 from sqlalchemy.sql import select
 
-app = create_api_app(public=('/ping', '/test', '/login' ))
+app = create_api_app(public=('/ping', '/test', '/login', "/questions"))
 
 @app.listener('before_server_start')
 async def open_database(app, loop):
@@ -23,7 +23,9 @@ async def api_method_ping(request):
 
 @app.route('/test', methods=['GET', 'POST'])
 async def api_method_test(request):
-    result = await services.get_questions(request.ctx.conn, int(request.ctx.params.get('user_id')))
+    user_id = int(request.ctx.params.get('user_id'))
+    question_id = int(request.ctx.params.get('question_id'))
+    result = await services.is_question_active_among_users(request.ctx.conn, user_id, question_id)
     return result
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -47,6 +49,13 @@ async def api_method_question(request):
         int(request.ctx.params.get('user_id'))
     )
     return questions
+
+@app.route('/users/question', methods=['GET'])
+async def api_method_user_active_question(request):
+    user_id = int(request.ctx.params.get('user_id'))
+    question_id = int(request.ctx.params.get('question_id'))
+    await services.activate_question_for_user(request.ctx.conn, user_id, question_id)
+    return None
 
 
 if __name__ == '__main__':

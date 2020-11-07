@@ -1,6 +1,10 @@
+from datetime import datetime, timedelta
+
 from sqlalchemy.sql import select
 
 from hivemind.models import *
+
+ACTIVE_THRESH_SECONDS = 6000
 
 
 def create_user(sess, *args, **kwargs):
@@ -8,6 +12,10 @@ def create_user(sess, *args, **kwargs):
     sess.add(user)
     sess.commit()
     return user
+
+
+def check_answer_correct(question, answer):
+    return question.answer == answer.value
 
 
 async def get_questions(conn, user_id):
@@ -25,7 +33,7 @@ async def get_questions(conn, user_id):
 
         is_correct = False
         for qa in question_answers:
-            if q.answer == qa.value:
+            if check_answer_correct(q, qa):
                 is_correct = True
                 break
 
@@ -36,3 +44,28 @@ async def get_questions(conn, user_id):
 
     return extended_questions
 
+
+async def activate_question_for_user(conn, user_id, question_id):
+    return await conn.execute(
+        User.update().values(
+            active_question_id=question_id,
+            active_question_last_active=datetime.utcnow(),
+        )
+    )
+
+
+async def is_question_active_among_users(conn, user_id, question_id):
+    active_thresh = datetime.utcnow() - timedelta(
+        seconds=ACTIVE_THRESH_SECONDS
+    )
+    results = await conn.execute(
+        select(User)
+        .where(User.c.active_question_id == question_id)
+        .where(User.c.id != user_id)
+        .where(User.c.active_question_last_active >= active_thresh)
+    )
+
+    ret = {"is_active": False}
+    if results.fetchone():
+        ret["is_active"] = True
+    return ret
