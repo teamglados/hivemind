@@ -94,9 +94,9 @@ def create_api_app(name='api', limit=5, public=tuple()):
             request
         )
 
-    #@app.middleware('request')
-    #async def api_query_params(request):
-    #    request.ctx.session = await AsyncSession(engine).__aenter__()
+    @app.middleware('request')
+    async def api_query_session(request):
+        request.ctx.conn = await engine.connect().__aenter__()
 
     @app.middleware('request')
     async def api_auth(request):
@@ -106,7 +106,7 @@ def create_api_app(name='api', limit=5, public=tuple()):
             try:
                 assert token is not None, 'authentication token is missing'
                 # TODO: Validate JWT_ADMIN_SECRET, JWT_SECRET
-                # TODO: Decode token and set user id  
+                # TODO: Decode token and set user id
                 #jwt_auth_validate(token, request.path)
             except AssertionError as e:
                 raise sanic.exceptions.Unauthorized(str(e))
@@ -130,8 +130,8 @@ def create_api_app(name='api', limit=5, public=tuple()):
         except AttributeError:
             return result
 
-    #@app.middleware('response')
-    #async def api_result_json(request, result):
-    #    await request.ctx.session.close()
+    @app.middleware('response')
+    async def api_result_json(request, result):
+       await request.ctx.conn.close()
 
     return app
