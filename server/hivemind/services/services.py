@@ -10,12 +10,14 @@ ACTIVE_THRESH_SECONDS = 6000
 HINT_VOTE_SCORE = 1
 
 
-def create_user(sess, *args, **kwargs):
-    user = User(*args, **kwargs)
-    sess.add(user)
-    sess.commit()
-    return user
+def create_user(conn, name):
+    result = await conn.execute(
+        User.insert()
+        .values(name=user_id)
+        .returning(User.c.id)
+    )
 
+    return result.fetchone()[0]
 
 def check_answer_correct(question, answer):
     return question.answer == answer.value
