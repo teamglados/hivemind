@@ -16,6 +16,12 @@ endpoint_tuple = (
     "/hints/add",
     "/hints/vote",
     "/answers/add",
+    "/users",
+    "/discuss/start",
+    "/discuss/close",
+    "/message/add",
+    "/message/list",
+    "/message/vote",
 )
 
 app = create_api_app(public=endpoint_tuple)
@@ -117,14 +123,14 @@ async def api_method_get_user(request):
 async def api_method_start_discussion(request):
     user_id = get_user_id_from_token(request)
     question_id = int(request.ctx.params.get("question_id"))
-    result =  await services.get_discussion_id(request.ctx.conn, user_id, question_id)
+    result = await services.get_discussion_id(request.ctx.conn, user_id, question_id)
     return {"discussion_id": str(result)}
 
 
 @app.route("/discuss/close", methods=["GET"])
 async def api_method_close_discussion(request):
     user_id = get_user_id_from_token(request)
-    result =  await services.close_discussion(request.ctx.conn, user_id)
+    result = await services.close_discussion(request.ctx.conn, user_id)
     return ""
 
 
@@ -133,8 +139,7 @@ async def api_method_add_message(request):
     user_id = get_user_id_from_token(request)
     discussion_id = UUID(request.ctx.params.get("discussion_id"))
     value = request.ctx.params.get("value")
-    result =  await services.add_message(request.ctx.conn, user_id, discussion_id, value)
-    return {"discussion_id": str(result)}
+    return await services.add_message(request.ctx.conn, user_id, discussion_id, value)
 
 
 @app.route("/message/list", methods=["GET"])
@@ -148,7 +153,8 @@ async def api_method_list_messages(request):
 async def api_method_vote_message(request):
     user_id = get_user_id_from_token(request)
     message_id = int(request.ctx.params.get("message_id"))
-    return await services.vote_message(request.ctx.conn, message_id)
+    vote_type = request.ctx.params.get("vote_type").lower()
+    return await services.vote_message(request.ctx.conn, message_id, vote_type)
 
 
 if __name__ == "__main__":

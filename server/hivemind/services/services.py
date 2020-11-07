@@ -1,6 +1,7 @@
 from uuid import uuid4
 from datetime import datetime, timedelta
 
+from sqlalchemy import func
 from sqlalchemy.sql import select
 
 from hivemind.models import *
@@ -185,7 +186,7 @@ async def create_discussion(conn, user_id, question_id):
             question_id=question_id,
             user_id=user_id,
         )
-        .returning(User.c.id)
+        .returning(DiscussionItem.c.id)
     )
     return discussion_id
 
@@ -196,7 +197,7 @@ async def get_discussion_id(conn, user_id, question_id):
         .where(User.c.active_discussion_id != None)
         .where(User.c.active_question_id == question_id)
         .group_by(User.c.active_discussion_id)
-        .having(func.length(User.c.active_discussion_id) < 2)
+        .having(func.count(User.c.active_discussion_id) < 2)
     )
 
     result_row = result.fetchone()
@@ -213,11 +214,12 @@ async def close_discussion(conn, user_id):
 
 
 async def add_message(conn, user_id, discussion_id, value):
-    return await conn.execute(
+    await conn.execute(
         Message.insert().values(
             user_id=user_id, discussion_id=discussion_id, value=value, score=0
         )
     )
+    return ""
 
 
 async def list_messages(conn, discussion_id):

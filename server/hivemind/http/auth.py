@@ -56,4 +56,4 @@ def get_user_id_from_token(request, secret=_JWT_SECRET):
         decoded = jwt_decode(token, secret=secret)
         return decoded.get("data").get("uid")
     # try from query string for local testing
-    return request.ctx.params.get('user_id')
+    return int(request.ctx.params.get('user_id'))
