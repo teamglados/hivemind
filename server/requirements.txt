@@ -4,3 +4,5 @@ SQLAlchemy-Searchable==1.2.0
 pydantic
 starlette
 asyncpg
+sanic==20.6.3
+sanic-limiter==0.1.3
