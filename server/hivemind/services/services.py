@@ -10,19 +10,6 @@ ACTIVE_THRESH_SECONDS = 6000
 HINT_VOTE_SCORE = 1
 
 
-def create_user(conn, name):
-    result = await conn.execute(
-        User.insert()
-        .values(name=user_id)
-        .returning(User.c.id)
-    )
-
-    return result.fetchone()[0]
-
-def check_answer_correct(question, answer):
-    return question.answer == answer.value
-
-
 def get_extended_question(question, answers):
     question_answers = [a for a in answers if question.id == a.question_id]
 
@@ -36,6 +23,18 @@ def get_extended_question(question, answers):
     q_dict["is_correct"] = is_correct
     q_dict["answer_count"] = len(question_answers)
     return q_dict
+
+async def create_user(conn, name):
+    result = await conn.execute(
+        User.insert()
+        .values(name=user_id)
+        .returning(User.c.id)
+    )
+
+    return result.fetchone()[0]
+
+def check_answer_correct(question, answer):
+    return question.answer == answer.value
 
 
 async def get_questions(conn, user_id):
@@ -116,7 +115,7 @@ async def vote_hint(conn, user_id, hint_id, vote_type):
     if prev_vote_res.fetchone():
         raise UserWarning("Already voted!")
 
-    score = HINT_VOTE_SCORE * (1 if vote_type == "up" else -1)
+    score = 1 if vote_type == "up" else -1
     result = await conn.execute(
         HintItem.insert().values(user_id=user_id, hint_id=hint_id, score=score)
     )
