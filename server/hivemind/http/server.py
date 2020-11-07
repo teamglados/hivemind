@@ -124,9 +124,8 @@ async def api_method_start_discussion(request):
 @app.route("/discuss/close", methods=["GET"])
 async def api_method_close_discussion(request):
     user_id = get_user_id_from_token(request)
-
-    result =  await services.get_discussion_id(request.ctx.conn, user_id, question_id)
-    return {"discussion_id": str(result)}
+    result =  await services.close_discussion(request.ctx.conn, user_id)
+    return ""
 
 
 if __name__ == "__main__":
