@@ -11,5 +11,5 @@ class User(Base, TimeStampMixin):
     active_question_last_active = Column(DateTime, nullable=True)
 
     # relationships
-    activequestion_id = Column(Integer, ForeignKey("question.id"), nullable=True)
+    active_question_id = Column(Integer, ForeignKey("question.id"), nullable=True)
 
