@@ -13,7 +13,7 @@ type ButtonProps = React.DetailedHTMLProps<
 >;
 
 type Props = {
-  variant: "primary" | "white" | "dimmed";
+  variant: "primary" | "white";
   loading?: boolean;
   disabled?: boolean;
   icon?: React.ReactNode;
@@ -59,13 +59,11 @@ const Button: React.FC<Props & ButtonProps> = ({
 const variantToBg: { [key in Props["variant"]]: Colors } = {
   primary: "primary",
   white: "white",
-  dimmed: "grey-200",
 };
 
 const variantToColor: { [key in Props["variant"]]: Colors } = {
   primary: "white",
   white: "secondary",
-  dimmed: "grey-700",
 };
 
 const ButtonBase = styled.button<Pick<Props, "variant">>`
@@ -78,7 +76,7 @@ const ButtonBase = styled.button<Pick<Props, "variant">>`
   transition: opacity 100ms ease-in-out;
 
   &:hover {
-    filter: brightness(1.1);
+    filter: brightness(${(p) => (p.variant === "white" ? 0.85 : 1.1)});
   }
 `;
 

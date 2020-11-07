@@ -50,6 +50,11 @@ const Sidebar = () => {
             <GradientText variant="title-2">420</GradientText>
             <FiAward size={32} color={theme.colors.secondary} />
           </Stack>
+
+          <Stack axis="x" spacing="xsmall" align="center">
+            <GradientText variant="title-3">+55</GradientText>
+            <Text variant="body-small">from hints you have submitted</Text>
+          </Stack>
         </ScoreStack>
       </Content>
     </Wrapper>
