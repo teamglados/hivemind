@@ -38,6 +38,7 @@ def get_api_response(request, **kwargs):
 def get_api_result_json(result):
     return sanic.response.HTTPResponse(
         get_json_string(result),
+        # headers={"Access-Control-Allow-Origin": "*"},
         content_type='application/json'
     )
 
