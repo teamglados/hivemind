@@ -26,7 +26,7 @@ def get_extended_question(question, answers):
 
 
 async def create_user(conn, name):
-    result = await conn.execute(User.insert().values(name=user_id).returning(User.c.id))
+    result = await conn.execute(User.insert().values(name=name).returning(User.c.id))
 
     return result.fetchone()[0]
 
@@ -172,3 +172,8 @@ async def get_user(conn, user_id):
     # - Score from discussions
     # - Score from hints
     return user
+
+
+async def get_discussion_id(conn, user_id, question_id):
+    select(User).where()
+    pass
