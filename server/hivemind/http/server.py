@@ -4,7 +4,7 @@ from hivemind.config import *
 import asyncio
 from sqlalchemy.sql import select
 
-app = create_api_app(public=('/ping', '/test', '/login', "/questions"))
+app = create_api_app(public=('/ping', '/test', '/login', "/questions/list", "/hints/list", "/hints/add"))
 
 @app.listener('before_server_start')
 async def open_database(app, loop):
@@ -42,8 +42,8 @@ async def api_method_auth(request):
     ))
     return token
 
-@app.route('/questions', methods=['GET'])
-async def api_method_question(request):
+@app.route('/questions/list', methods=['GET'])
+async def api_method_get_questions(request):
     questions = await services.get_questions(
         request.ctx.conn,
         int(request.ctx.params.get('user_id'))
@@ -57,6 +57,20 @@ async def api_method_user_active_question(request):
     await services.activate_question_for_user(request.ctx.conn, user_id, question_id)
     return None
 
+
+@app.route('/hints/add', methods=['GET'])
+async def api_method_add_hint(request):
+    user_id = int(request.ctx.params.get('user_id'))
+    question_id = int(request.ctx.params.get('question_id'))
+    value = request.ctx.params.get('value')
+
+    return await services.add_hint(request.ctx.conn, user_id, question_id, value)
+
+@app.route('/hints/list', methods=['GET'])
+async def api_method_get_hints(request):
+    user_id = int(request.ctx.params.get('user_id'))
+    question_id = int(request.ctx.params.get('question_id'))
+    return await services.get_hints(request.ctx.conn, user_id, question_id)
 
 if __name__ == '__main__':
     app.run(

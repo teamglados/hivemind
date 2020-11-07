@@ -55,9 +55,7 @@ async def activate_question_for_user(conn, user_id, question_id):
 
 
 async def is_question_active_among_users(conn, user_id, question_id):
-    active_thresh = datetime.utcnow() - timedelta(
-        seconds=ACTIVE_THRESH_SECONDS
-    )
+    active_thresh = datetime.utcnow() - timedelta(seconds=ACTIVE_THRESH_SECONDS)
     results = await conn.execute(
         select(User)
         .where(User.c.active_question_id == question_id)
@@ -69,3 +67,20 @@ async def is_question_active_among_users(conn, user_id, question_id):
     if results.fetchone():
         ret["is_active"] = True
     return ret
+
+
+async def add_hint(conn, user_id, question_id, value):
+    result = await conn.execute(
+        Hint.insert()
+        .values(user_id=user_id, question_id=question_id, value=value)
+        .returning(Hint.c.id)
+    )
+    return result.fetchone()[0]
+
+
+async def get_hints(conn, user_id, question_id):
+    result = await conn.execute(
+        select(Hint).where(Hint.c.user_id != user_id).where(Hint.c.question_id == question_id)
+    )
+
+    return [dict(r) for r in result.fetchall()]
