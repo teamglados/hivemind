@@ -73,7 +73,7 @@ async def api_method_get_hints(request):
     return await services.get_hints(request.ctx.conn, user_id, question_id)
 
 @app.route('/hints/vote', methods=['GET'])
-async def api_method_get_hints(request):
+async def api_method_hints_vote(request):
     hint_id = int(request.ctx.params.get('hint_id'))
     user_id = int(request.ctx.params.get('user_id'))
     vote_type = request.ctx.params.get('vote_type').lower()
