@@ -3,6 +3,7 @@ from hivemind.services import services
 from hivemind.config import *
 import asyncio
 from sqlalchemy.sql import select
+from sanic_cors import CORS, cross_origin
 
 
 endpoint_tuple = (
@@ -17,6 +18,7 @@ endpoint_tuple = (
 )
 
 app = create_api_app(public=endpoint_tuple)
+CORS(app, resources={"*": {"origins": "*"}})
 
 
 @app.listener("before_server_start")
@@ -49,10 +51,10 @@ async def api_method_test(request):
 @app.limiter("1 per second")
 async def api_method_auth(request):
     name = request.ctx.params.get("name")
-    user_id = services.create_user(request.ctx.conn, name)
+    user_id = await services.create_user(request.ctx.conn, name)
 
     token = jwt_auth_create(
-        scopes=list(endpoint_tuple), data=dict(name=user.name, uid=user.id)
+        scopes=list(endpoint_tuple), data=dict(name=name, uid=user_id)
     )
     return token
 
