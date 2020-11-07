@@ -9,8 +9,8 @@ from starlette.datastructures import Secret
 config = Config(".env")
 
 # database
-DATABASE_HOSTNAME = config("DATABASE_HOSTNAME", default="asdasd")
-DATABASE_CREDENTIALS = config("DATABASE_CREDENTIALS", cast=Secret, default="asdasd")
-DATABASE_NAME = config("DATABASE_NAME", default="dispatch")
+DATABASE_HOSTNAME = config("DATABASE_HOSTNAME", default="localhost")
+DATABASE_CREDENTIALS = config("DATABASE_CREDENTIALS", cast=Secret, default="postgres:postgres")
+DATABASE_NAME = config("DATABASE_NAME", default="prod")
 DATABASE_PORT = config("DATABASE_PORT", default="5432")
-SQLALCHEMY_DATABASE_URI = f"postgresql+psycopg2://{DATABASE_CREDENTIALS}@{DATABASE_HOSTNAME}:{DATABASE_PORT}/{DATABASE_NAME}"
+SQLALCHEMY_DATABASE_URI = f"postgresql+asyncpg://{DATABASE_CREDENTIALS}@{DATABASE_HOSTNAME}:{DATABASE_PORT}/{DATABASE_NAME}"
