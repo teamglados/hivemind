@@ -11,8 +11,5 @@ class Hint(Base, TimeStampMixin):
     value = Column(String, nullable=False)
 
     # relationships
-    userId = Column(Integer, ForeignKey("user.id"), nullable=False)
-    questionId = Column(Integer, ForeignKey("question.id"), nullable=False)
-
-    # TODO
-    # score = Column(Float, nullable=False)
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    question_id = Column(Integer, ForeignKey("question.id"), nullable=False)

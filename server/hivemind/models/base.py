@@ -209,27 +209,3 @@ def search_filter_sort_paginate(
         "page": pagination.page_number,
         "total": pagination.total_results,
     }
-
-
-async def async_main():
-    engine = create_async_engine(str(SQLALCHEMY_DATABASE_URI), echo=True)
-
-    async with engine.begin() as conn:
-        await conn.run_sync(meta.drop_all)
-        await conn.run_sync(meta.create_all)
-
-        await conn.execute(
-            t1.insert(), [{"name": "some name 1"}, {"name": "some name 2"}]
-        )
-
-    async with engine.connect() as conn:
-
-        # select a Result, which will be delivered with buffered
-        # results
-        result = await conn.execute(select(t1).where(t1.c.name == "some name 1"))
-
-        print(result.fetchall())
-
-
-if __name__ == "__main__":
-    asyncio.run(async_main())

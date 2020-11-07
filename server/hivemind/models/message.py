@@ -12,12 +12,12 @@ class Message(Base, TimeStampMixin):
     # columns
     id = Column(Integer, primary_key=True)
     score = Column(Float, nullable=False)
-    discussionId = Column(
+    discussion_id = Column(
         UUID(as_uuid=True), default=uuid.uuid4, unique=True, nullable=False
     )
 
     # relationships
-    userId = Column(Integer, ForeignKey("user.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
 
     # TODO
     # score = Column(Float, nullable=False)

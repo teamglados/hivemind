@@ -5,12 +5,12 @@ from hivemind.models.base import Base
 from hivemind.models.user import User
 
 
-class Question(Base, TimeStampMixin):
+class Answer(Base, TimeStampMixin):
     # columns
     id = Column(Integer, primary_key=True)
     value = Column(String, nullable=False)
     score = Column(Float, nullable=False)
 
     # relationships
-    userId = Column(Integer, ForeignKey("user.id"), nullable=False)
-    questionId = Column(Integer, ForeignKey("question.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    question_id = Column(Integer, ForeignKey("question.id"), nullable=False)

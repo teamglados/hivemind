@@ -12,13 +12,13 @@ class DiscussionItem(Base, TimeStampMixin):
     # columns
     id = Column(Integer, primary_key=True)
     score = Column(Float, nullable=False)
-    discussionId = Column(
+    discussion_id = Column(
         UUID(as_uuid=True), default=uuid.uuid4, unique=True, nullable=False
     )
 
     # relationships
-    userId = Column(Integer, ForeignKey("user.id"), nullable=False)
-    questionId = Column(Integer, ForeignKey("question.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    question_id = Column(Integer, ForeignKey("question.id"), nullable=False)
 
     # TODO
     # score = Column(Float, nullable=False)

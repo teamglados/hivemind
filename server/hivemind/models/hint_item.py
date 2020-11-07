@@ -11,6 +11,6 @@ class HintItem(Base, TimeStampMixin):
     score = Column(Float, nullable=False)
 
     # relationships
-    hintId = Column(Integer, ForeignKey("hint.id"), nullable=False)
-    userId = Column(Integer, ForeignKey("user.id"), nullable=False)
+    hint_id = Column(Integer, ForeignKey("hint.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
 
