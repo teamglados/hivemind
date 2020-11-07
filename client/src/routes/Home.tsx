@@ -5,7 +5,7 @@ import { BsArrowRight } from "react-icons/bs";
 import { FiAward } from "react-icons/fi";
 
 import { range, randBetween } from "../utils/common";
-import { Button, GradientText, Text } from "../components/common";
+import { Button, Text } from "../components/common";
 
 const Home = () => {
   const openQuestion = (i: number) => {
@@ -64,7 +64,7 @@ const bgAnim = (theme: DefaultTheme) => keyframes`
 const QuestionCard = styled.div`
   border-radius: ${(p) => p.theme.radii.medium};
   background-color: ${(p) => p.theme.colors.white};
-  box-shadow: ${(p) => p.theme.shadows.large};
+  box-shadow: ${(p) => p.theme.shadows.normal};
   max-width: 600px;
   overflow: hidden;
 `;
