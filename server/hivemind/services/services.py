@@ -1,3 +1,4 @@
+from uuid import uuid4
 from datetime import datetime, timedelta
 
 from sqlalchemy.sql import select
@@ -203,4 +204,10 @@ async def get_discussion_id(conn, user_id, question_id):
         return result_row.active_discussion_id
     else:
         return await create_discussion(conn, user_id, question_id)
+
+
+async def close_discussion(conn, user_id):
+    await conn.execute(
+        User.update().where(users.c.id == user_id).values(active_discussion_id=None)
+    )
 
