@@ -1,13 +1,13 @@
 import React from "react";
 import styled from "styled-components";
 
-import NavMenu from "./NavMenu";
+import Sidebar from "./Sidebar";
 
 const PageLayout: React.FC = ({ children }) => {
   return (
     <Layout>
       <Navigation>
-        <NavMenu />
+        <Sidebar />
       </Navigation>
       <Content>{children}</Content>
     </Layout>
