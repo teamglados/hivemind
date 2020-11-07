@@ -13,9 +13,10 @@ type ButtonProps = React.DetailedHTMLProps<
 >;
 
 type Props = {
-  variant: "primary" | "dimmed";
+  variant: "primary" | "white" | "dimmed";
   loading?: boolean;
   disabled?: boolean;
+  icon?: React.ReactNode;
   onClick: any;
 };
 
@@ -24,6 +25,7 @@ const Button: React.FC<Props & ButtonProps> = ({
   onClick,
   loading,
   disabled,
+  icon,
   children,
 }) => {
   return (
@@ -32,6 +34,8 @@ const Button: React.FC<Props & ButtonProps> = ({
         <Text variant="button-text" color={variantToColor[variant]}>
           {children}
         </Text>
+
+        {!loading ? icon : null}
 
         <AnimatePresence>
           {loading && (
@@ -54,25 +58,24 @@ const Button: React.FC<Props & ButtonProps> = ({
 
 const variantToBg: { [key in Props["variant"]]: Colors } = {
   primary: "primary",
+  white: "white",
   dimmed: "grey-200",
 };
 
 const variantToColor: { [key in Props["variant"]]: Colors } = {
   primary: "white",
-  dimmed: "grey-600",
+  white: "secondary",
+  dimmed: "grey-700",
 };
 
 const ButtonBase = styled.button<Pick<Props, "variant">>`
   min-height: 54px;
   background-color: ${(p) => p.theme.colors[variantToBg[p.variant]]};
+  color: ${(p) => p.theme.colors[variantToColor[p.variant]]};
   border-radius: ${(p) => p.theme.radii.medium};
   padding: ${(p) => p.theme.spacing.normal} ${(p) => p.theme.spacing.large};
   opacity: ${(p) => (p.disabled ? 0.3 : 1)};
   transition: opacity 100ms ease-in-out;
-
-  span {
-    text-shadow: 0px 0px 2px rgba(0, 0, 0, 0.2);
-  }
 
   &:hover {
     filter: brightness(1.1);

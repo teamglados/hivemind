@@ -78,7 +78,7 @@ const theme: DefaultTheme = {
     `,
     "button-text": css`
       font-weight: 600;
-      font-size: 14px;
+      font-size: 15px;
       line-height: 1;
     `,
   },
