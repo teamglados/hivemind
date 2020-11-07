@@ -7,7 +7,8 @@ from hivemind.runtime import metadata
 
 Message = Table("message", metadata,
     Column("id", Integer, primary_key=True),
-    Column("score", Float, nullable=False),
+    Column("value", String, nullable=False),
+    Column("score", Float, nullable=True),
     Column("discussion_id", UUID(as_uuid=True), unique=False, nullable=False),
     Column("user_id", Integer, ForeignKey("user.id"), nullable=False),
     Column("created_at", DateTime, default=datetime.utcnow)

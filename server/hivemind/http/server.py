@@ -5,7 +5,7 @@ from hivemind.config import *
 import asyncio
 from sqlalchemy.sql import select
 from sanic_cors import CORS, cross_origin
-
+from uuid import UUID
 
 endpoint_tuple = (
     "/ping",
@@ -126,6 +126,29 @@ async def api_method_close_discussion(request):
     user_id = get_user_id_from_token(request)
     result =  await services.close_discussion(request.ctx.conn, user_id)
     return ""
+
+
+@app.route("/message/add", methods=["GET"])
+async def api_method_add_message(request):
+    user_id = get_user_id_from_token(request)
+    discussion_id = UUID(request.ctx.params.get("discussion_id"))
+    value = request.ctx.params.get("value")
+    result =  await services.add_message(request.ctx.conn, user_id, discussion_id, value)
+    return {"discussion_id": str(result)}
+
+
+@app.route("/message/list", methods=["GET"])
+async def api_method_list_messages(request):
+    user_id = get_user_id_from_token(request)
+    discussion_id = UUID(request.ctx.params.get("discussion_id"))
+    return await services.list_messages(request.ctx.conn, discussion_id)
+
+
+@app.route("/message/vote", methods=["GET"])
+async def api_method_vote_message(request):
+    user_id = get_user_id_from_token(request)
+    message_id = int(request.ctx.params.get("message_id"))
+    return await services.vote_message(request.ctx.conn, message_id)
 
 
 if __name__ == "__main__":

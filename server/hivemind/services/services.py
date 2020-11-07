@@ -211,3 +211,30 @@ async def close_discussion(conn, user_id):
         User.update().where(users.c.id == user_id).values(active_discussion_id=None)
     )
 
+
+async def add_message(conn, user_id, discussion_id, value):
+    return await conn.execute(
+        Message.insert().values(
+            user_id=user_id, discussion_id=discussion_id, value=value, score=0
+        )
+    )
+
+
+async def list_messages(conn, discussion_id):
+    result = await conn.execute(
+        select(Message).where(Message.c.discussion_id == discussion_id)
+    )
+    return [dict(m) for m in result.fetchall()]
+
+
+async def vote_message(conn, message_id, vote_type):
+    score = 1 if vote_type == "up" else -1
+
+    result = await conn.execute(select(Message).where(Message.c.id == message_id))
+    message = result.fetchone()
+    score = message.score + score
+    await conn.execute(Message.update().values(score=score))
+
+    message = dict(message)
+    message["score"] = score
+    return message
