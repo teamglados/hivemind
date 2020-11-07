@@ -2,21 +2,18 @@ import * as React from "react";
 import { Stack } from "styled-layout";
 import styled from "styled-components";
 import { IoIosSend } from "react-icons/io";
-import { useNavigate, useParams } from "react-router-dom";
-import { AnimatePresence, AnimateSharedLayout } from "framer-motion";
+import { RiQuestionFill, RiErrorWarningFill } from "react-icons/ri";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { AnimatePresence, AnimateSharedLayout, motion } from "framer-motion";
 
+import { RequestState, AnswerState } from "../models/types";
+import { useAppState } from "../models";
+import theme from "../constants/theme";
 import { BackButton, Text, Textarea } from "../components/common";
 import Hints from "../components/Hints";
 import CorrectAnswer from "../components/CorrectAnswer";
 import GiveHintForm from "../components/GiveHintForm";
 import HintStory from "../components/HintStory";
-
-enum AnswerState {
-  INITIAL = "INITIAL",
-  CORRECT = "CORRECT",
-  INCORRECT = "INCORRECT",
-  GIVE_HINT = "GIVE_HINT",
-}
 
 type Hint = {
   gradientDeg: number;
@@ -25,30 +22,32 @@ type Hint = {
 
 const Question = () => {
   const [activeHint, setActiveHint] = React.useState<null | Hint>(null);
-
   const [answer, setAnswer] = React.useState("");
-  const [answerState, setAnswerState] = React.useState<AnswerState>(
-    AnswerState.INITIAL
-  );
-
+  const { state, actions } = useAppState();
   const params = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
+
+  const question = state.question.questions.find(
+    (q) => q.id === Number(params.id)
+  );
 
   const submitAnswer = (event: any) => {
     event.preventDefault();
 
-    if (answer.length > 0 && answerState === AnswerState.INITIAL) {
-      setAnswerState(AnswerState.CORRECT);
-
-      setTimeout(() => {
-        setAnswerState(AnswerState.GIVE_HINT);
-      }, 4000);
+    if (
+      question &&
+      answer.length > 0 &&
+      (state.question.answerState === AnswerState.INITIAL ||
+        state.question.answerState === AnswerState.INCORRECT)
+    ) {
+      actions.question.answerQuestion({ id: question.id, answer });
     }
   };
 
   const submitHint = (hint: string) => {
     console.log("> Hint", hint);
-    setAnswerState(AnswerState.INITIAL);
+    // setAnswerState(AnswerState.INITIAL);
     setTimeout(() => {
       navigate("/home");
     }, 1000);
@@ -59,13 +58,19 @@ const Question = () => {
     setActiveHint(null);
   };
 
+  React.useEffect(() => {
+    if (!question) navigate("/home");
+  }, [question, navigate]);
+
   return (
     <AnimateSharedLayout>
       <Stack axis="y" spacing="small">
         <BackButton to="/home" />
 
         <Stack axis="y" spacing="xlarge">
-          <Text variant="title-1">Question {Number(params.i) + 1}</Text>
+          <Text variant="title-1">
+            Question {Number((location.state as any).order) + 1}
+          </Text>
 
           <Stack axis="y" spacing="small">
             <Text variant="overline">Hints</Text>
@@ -77,12 +82,29 @@ const Question = () => {
 
             <QuestionCard>
               <Stack axis="y" spacing="large">
-                <Text variant="body">
-                  Twitter non-disclosure agreement vesting period user
-                  experience direct mailing channels iPad social media
-                  interaction design return on investment. Network effects
-                  success technology alpha angel investor startup.
-                </Text>
+                <Stack axis="x" spacing="small">
+                  <RiQuestionFill size={32} color={theme.colors["grey-700"]} />
+                  <Text variant="body">{question?.question}</Text>
+                </Stack>
+
+                {state.question.answerState === AnswerState.INCORRECT && (
+                  <Stack
+                    axis="x"
+                    spacing="small"
+                    as={motion.div}
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 8 }}
+                  >
+                    <RiErrorWarningFill
+                      size={22}
+                      color={theme.colors.secondary}
+                    />
+                    <Text variant="body">
+                      Incorrect answer - please try again.
+                    </Text>
+                  </Stack>
+                )}
 
                 <Textarea
                   onSubmit={submitAnswer}
@@ -95,6 +117,9 @@ const Question = () => {
                       style={{ transform: "rotate(15deg)" }}
                     />
                   }
+                  buttonLoading={
+                    state.question.answerQuestion === RequestState.PENDING
+                  }
                 />
               </Stack>
             </QuestionCard>
@@ -102,10 +127,16 @@ const Question = () => {
         </Stack>
       </Stack>
 
-      {answerState === AnswerState.CORRECT && <CorrectAnswer />}
+      {state.question.answerState === AnswerState.CORRECT && (
+        <CorrectAnswer
+          onReadyToClose={() =>
+            actions.question.setAnswerState(AnswerState.GIVE_HINT)
+          }
+        />
+      )}
 
       <AnimatePresence>
-        {answerState === AnswerState.GIVE_HINT && (
+        {state.question.answerState === AnswerState.GIVE_HINT && (
           <GiveHintForm onHintSubmit={submitHint} />
         )}
       </AnimatePresence>

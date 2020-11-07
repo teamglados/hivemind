@@ -1,7 +1,6 @@
 import * as React from "react";
 import styled from "styled-components";
 import { Stack } from "styled-layout";
-import { motion, AnimatePresence } from "framer-motion";
 
 import theme, { Colors } from "../../constants/theme";
 import Spinner from "./Spinner";
@@ -46,20 +45,12 @@ const Button: React.FC<Props & ButtonProps> = ({
 
         {!loading ? icon : null}
 
-        <AnimatePresence>
-          {loading && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <Spinner
-                size="small"
-                color={variant === "primary" ? "light" : "dark"}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {loading && (
+          <Spinner
+            size="small"
+            color={variant === "primary" ? "light" : "dark"}
+          />
+        )}
       </Stack>
     </ButtonBase>
   );

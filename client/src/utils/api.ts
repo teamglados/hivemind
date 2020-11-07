@@ -1,9 +1,12 @@
 import axios from "axios";
 import qs from "qs";
 
-const api = axios.create({
-  baseURL: "http://192.168.218.120:8000/",
-});
+const baseURL =
+  process.env.NODE_ENV === "development"
+    ? "http://192.168.218.120:8000/"
+    : process.env.REACT_APP_API_URL;
+
+const api = axios.create({ baseURL });
 
 api.interceptors.request.use(
   (config) => {
@@ -34,5 +37,29 @@ export const login = async (name: string) => {
 
 export const getQuestions = async () => {
   const res = await api.get("/questions/list");
+  return res.data;
+};
+
+export const answerQuestion = async ({
+  id,
+  answer,
+}: {
+  id: number;
+  answer: string;
+}) => {
+  const params = qs.stringify({ question_id: id, value: answer });
+  const res = await api.get(`/answers/add?${params}`);
+  return res.data;
+};
+
+export const addHint = async ({
+  questionId,
+  hint,
+}: {
+  questionId: number;
+  hint: string;
+}) => {
+  const params = qs.stringify({ question_id: questionId, value: hint });
+  const res = await api.get(`/hints/add?${params}`);
   return res.data;
 };

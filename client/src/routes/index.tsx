@@ -24,7 +24,7 @@ const AppRoutes = () => {
           }
         />
         <Route
-          path="questions/:i"
+          path="questions/:id"
           element={
             <Page>
               <Question />

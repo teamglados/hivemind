@@ -6,6 +6,7 @@ import { FiAward } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import useMount from "react-use/lib/useMount";
+import { IoIosCheckmarkCircle } from "react-icons/io";
 
 import { range, randBetween, truncate } from "../utils/common";
 import { Button, Text } from "../components/common";
@@ -39,7 +40,7 @@ const Home = () => {
     <Stack spacing="medium" axis="y">
       <Text variant="title-2">Exercise questions</Text>
 
-      {state.question.fetchState === RequestState.PENDING && (
+      {state.question.getQuestions === RequestState.PENDING && (
         <Stack
           spacing="medium"
           axis="y"
@@ -58,7 +59,7 @@ const Home = () => {
         </Stack>
       )}
 
-      {state.question.fetchState === RequestState.SUCCESS && (
+      {state.question.getQuestions === RequestState.SUCCESS && (
         <Stack
           spacing="medium"
           axis="y"
@@ -88,13 +89,27 @@ const Home = () => {
                         <FiAward size={32} color="#fff" />
                       </Stack>
                     </Stack>
-                    <Button
-                      onClick={() => navigate(`/questions/${i}`)}
-                      variant="white"
-                      icon={<BsArrowRight size={24} />}
-                    >
-                      View
-                    </Button>
+
+                    {!question.is_correct ? (
+                      <Button
+                        variant="white"
+                        icon={<BsArrowRight size={24} />}
+                        onClick={() =>
+                          navigate(`/questions/${question.id}`, {
+                            state: { order: i },
+                          })
+                        }
+                      >
+                        View
+                      </Button>
+                    ) : (
+                      <AnsweredStack axis="x" spacing="xsmall" align="center">
+                        <IoIosCheckmarkCircle size={40} color="#fff" />
+                        <Text variant="body-small" color="white">
+                          Answered
+                        </Text>
+                      </AnsweredStack>
+                    )}
                   </Stack>
                 </QuestionScore>
               </Stack>
@@ -126,6 +141,7 @@ const QuestionCardContent = styled(Stack)`
 `;
 
 const QuestionScore = styled.div<{ deg: number }>`
+  min-width: 245px;
   padding: ${(p) => p.theme.spacing.large} ${(p) => p.theme.spacing.xxlarge};
   background-image: linear-gradient(
     ${(p) => p.deg}deg,
@@ -139,6 +155,12 @@ const LoadingPlaceholder = styled.div`
   max-width: 600px;
   border-radius: ${(p) => p.theme.radii.medium};
   animation: ${(p) => bgAnim(p.theme)} 3s linear infinite;
+`;
+
+const AnsweredStack = styled(Stack)`
+  padding: ${(p) => p.theme.spacing.xsmall};
+  border-radius: ${(p) => p.theme.radii.normal};
+  background-color: rgba(255, 255, 255, 0.2);
 `;
 
 export default Home;
