@@ -12,4 +12,3 @@ class User(Base, TimeStampMixin):
 
     # relationships
     active_question_id = Column(Integer, ForeignKey("question.id"), nullable=True)
-

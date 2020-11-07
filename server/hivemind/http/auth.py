@@ -16,9 +16,10 @@ def jwt_decode(token, secret=None):
         algorithms='HS256'
     )
 
-def jwt_auth_create(scopes, expiry=172800):
+def jwt_auth_create(scopes, data=None, expiry=172800):
     return jwt_encode(dict(
         scopes=scopes,
+        data=data,
         expiry=datetime.now() + timedelta(seconds=expiry)
     ))
 

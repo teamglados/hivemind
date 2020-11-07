@@ -13,8 +13,9 @@ from hivemind.models.message import Message
 from hivemind.models.discussion_item import DiscussionItem
 from hivemind.config import SQLALCHEMY_DATABASE_URI
 
-async def async_main():
-    engine = create_async_engine(str(SQLALCHEMY_DATABASE_URI), echo=True)
+engine = create_async_engine(str(SQLALCHEMY_DATABASE_URI), echo=True)
+
+async def pg_init_tables():
     async with engine.begin() as conn:
         # question
         await conn.run_sync(Question.metadata.drop_all)
@@ -44,14 +45,15 @@ async def async_main():
         await conn.run_sync(HintItem.metadata.drop_all)
         await conn.run_sync(HintItem.metadata.create_all)
 
-
+async def pg_create_test():
     async with AsyncSession(engine) as session:
         async with session.begin():
             session.add_all(
                 [
-                    User(name="moi"),
+                    User(name="test"),
                 ]
             )
         await session.commit()
 
-asyncio.run(async_main())
+if __name__ == '__main__':
+    asyncio.run(pg_init_tables())

@@ -1,4 +1,5 @@
 from hivemind.http.auth import *
+from hivemind.runtime import *
 from datetime import datetime
 import sanic_limiter
 import sanic
@@ -76,9 +77,11 @@ def create_api_error_handler():
 
 def create_api_app(name='api', limit=5, public=tuple()):
     app = sanic.Sanic(name=name)
+
     app.public = public
     app.logger = sanic.log.logger
     app.limiter = create_api_limit_handler(app, limit)
+
     app.error_handler = create_api_error_handler()
     app.error_handler.add(
         sanic.exceptions.NotFound,
@@ -91,16 +94,19 @@ def create_api_app(name='api', limit=5, public=tuple()):
             request
         )
 
+    #@app.middleware('request')
+    #async def api_query_params(request):
+    #    request.ctx.session = await AsyncSession(engine).__aenter__()
+
     @app.middleware('request')
     async def api_auth(request):
         if request.path not in request.app.public:
-            if token := request.ctx.params.get('token'):
-                del request.ctx.params['token']
-            else:
+            if (token := request.ctx.params.get('token')) is None:
                 token = request.headers.get('token')
             try:
                 assert token is not None, 'authentication token is missing'
-                # NOTE: Validate JWT_ADMIN_SECRET, JWT_SECRET
+                # TODO: Validate JWT_ADMIN_SECRET, JWT_SECRET
+                # TODO: Decode token and set user id  
                 #jwt_auth_validate(token, request.path)
             except AssertionError as e:
                 raise sanic.exceptions.Unauthorized(str(e))
@@ -123,5 +129,9 @@ def create_api_app(name='api', limit=5, public=tuple()):
             return get_api_result_json(response)
         except AttributeError:
             return result
+
+    #@app.middleware('response')
+    #async def api_result_json(request, result):
+    #    await request.ctx.session.close()
 
     return app
