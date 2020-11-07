@@ -2,23 +2,22 @@ import { IConfig } from "overmind";
 import { createHook } from "overmind-react";
 
 import * as api from "../utils/api";
-import * as storage from "../utils/storage";
 import * as user from "./user";
+import * as question from "./question";
 import { onInitialize } from "./init";
 
 export const config = {
   onInitialize,
   state: {
     user: user.state,
+    question: question.state,
   },
   actions: {
     user: user.actions,
+    question: question.actions,
   },
   effects: {
     api,
-    storage: {
-      user: storage.createStorage("user"),
-    },
   },
 };
 

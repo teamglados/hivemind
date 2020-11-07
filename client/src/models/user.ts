@@ -1,12 +1,14 @@
 import { AsyncAction, Action } from "overmind";
 import { NavigateFunction } from "react-router";
 
+import { getPersistedUser } from "../utils/storage";
+
 type State = {
   name: null | string;
 };
 
 export const state: State = {
-  name: localStorage.getItem("user"),
+  name: getPersistedUser(),
 };
 
 const login: AsyncAction<{ user: string; navigate: NavigateFunction }> = async (
@@ -14,18 +16,20 @@ const login: AsyncAction<{ user: string; navigate: NavigateFunction }> = async (
   value
 ) => {
   const { user, navigate } = value;
-
-  // Login and persist user
   const data = await effects.api.login(user);
-  console.log({ data });
 
-  localStorage.setItem("user", user);
-
-  state.user.name = user;
-  navigate("/home");
+  if (!data.error) {
+    const token = data.result;
+    localStorage.setItem("token", token);
+    state.user.name = user;
+    navigate("/home");
+  } else {
+    console.log("> Could not login!", data);
+  }
 };
 
-const logout: Action<string> = ({ state }, value) => {
+const logout: Action = ({ state }) => {
+  localStorage.removeItem("token");
   state.user.name = null;
 };
 

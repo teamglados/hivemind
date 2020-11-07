@@ -5,11 +5,15 @@ import { BsArrowRight } from "react-icons/bs";
 import { FiAward } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import useMount from "react-use/lib/useMount";
 
-import { range, randBetween } from "../utils/common";
+import { range, randBetween, truncate } from "../utils/common";
 import { Button, Text } from "../components/common";
+import { useAppState } from "../models";
+import { RequestState } from "../models/types";
 
 const Home = () => {
+  const { actions, state } = useAppState();
   const navigate = useNavigate();
 
   const listVariants = {
@@ -27,54 +31,77 @@ const Home = () => {
     show: { opacity: 1, y: 0 },
   };
 
+  useMount(() => {
+    actions.question.getQuestions();
+  });
+
   return (
     <Stack spacing="medium" axis="y">
       <Text variant="title-2">Exercise questions</Text>
 
-      <Stack
-        spacing="medium"
-        axis="y"
-        as={motion.div}
-        variants={listVariants}
-        initial="hidden"
-        animate="show"
-      >
-        {range(5).map((i) => (
-          <QuestionCard key={i} as={motion.div} variants={itemVariants}>
-            <Stack axis="x">
-              <QuestionCardContent axis="y" spacing="normal">
-                <Text variant="title-3">Question {i + 1}</Text>
-                <Text variant="body">
-                  Monetization success rockstar pivot angel...
-                </Text>
-              </QuestionCardContent>
+      {state.question.fetchState === RequestState.PENDING && (
+        <Stack
+          spacing="medium"
+          axis="y"
+          as={motion.div}
+          variants={listVariants}
+          initial="hidden"
+          animate="show"
+        >
+          {range(8).map((i) => (
+            <LoadingPlaceholder
+              key={i}
+              as={motion.div}
+              variants={itemVariants}
+            />
+          ))}
+        </Stack>
+      )}
 
-              <QuestionScore deg={randBetween(0, 360)}>
-                <Stack axis="y" spacing="medium">
-                  <Stack axis="y" spacing="xxsmall">
-                    <Text variant="overline" color="white">
-                      Reward
-                    </Text>
-                    <Stack axis="x" spacing="xsmall" align="center">
-                      <Text variant="title-2" color="white">
-                        20
+      {state.question.fetchState === RequestState.SUCCESS && (
+        <Stack
+          spacing="medium"
+          axis="y"
+          as={motion.div}
+          variants={listVariants}
+          initial="hidden"
+          animate="show"
+        >
+          {state.question.questions.map((question, i) => (
+            <QuestionCard key={i} as={motion.div} variants={itemVariants}>
+              <Stack axis="x">
+                <QuestionCardContent axis="y" spacing="normal">
+                  <Text variant="title-3">Question {i + 1}</Text>
+                  <Text variant="body">{truncate(question.question, 30)}</Text>
+                </QuestionCardContent>
+
+                <QuestionScore deg={randBetween(0, 360)}>
+                  <Stack axis="y" spacing="medium">
+                    <Stack axis="y" spacing="xxsmall">
+                      <Text variant="overline" color="white">
+                        Reward
                       </Text>
-                      <FiAward size={32} color="#fff" />
+                      <Stack axis="x" spacing="xsmall" align="center">
+                        <Text variant="title-2" color="white">
+                          {question.score}
+                        </Text>
+                        <FiAward size={32} color="#fff" />
+                      </Stack>
                     </Stack>
+                    <Button
+                      onClick={() => navigate(`/questions/${i}`)}
+                      variant="white"
+                      icon={<BsArrowRight size={24} />}
+                    >
+                      View
+                    </Button>
                   </Stack>
-                  <Button
-                    onClick={() => navigate(`/questions/${i}`)}
-                    variant="white"
-                    icon={<BsArrowRight size={24} />}
-                  >
-                    View
-                  </Button>
-                </Stack>
-              </QuestionScore>
-            </Stack>
-          </QuestionCard>
-        ))}
-      </Stack>
+                </QuestionScore>
+              </Stack>
+            </QuestionCard>
+          ))}
+        </Stack>
+      )}
     </Stack>
   );
 };
@@ -108,7 +135,8 @@ const QuestionScore = styled.div<{ deg: number }>`
 `;
 
 const LoadingPlaceholder = styled.div`
-  height: 200px;
+  height: 207px;
+  max-width: 600px;
   border-radius: ${(p) => p.theme.radii.medium};
   animation: ${(p) => bgAnim(p.theme)} 3s linear infinite;
 `;
