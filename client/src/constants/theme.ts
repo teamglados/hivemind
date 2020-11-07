@@ -20,6 +20,9 @@ export const media = createMediaQuery(breakpoints);
 
 const theme: DefaultTheme = {
   colors: {
+    primary: "#13A5F2",
+    secondary: "#6F1BD1",
+    "secondary-lightest": "#F6F2F7",
     white: "#ffffff",
     black: "#000000",
     divider: "#e2e8f0",
@@ -34,33 +37,27 @@ const theme: DefaultTheme = {
     "grey-900": "#1a202c",
   },
   typography: {
+    "large-title": css`
+      font-weight: 900;
+      font-size: 72px;
+      line-height: 1;
+      letter-spacing: -1.5px;
+    `,
     "title-1": css`
       font-weight: 700;
       font-size: 56px;
       line-height: 1;
       letter-spacing: -1.5px;
-
-      ${media.phone`
-        font-size: 42px;
-      `}
     `,
     "title-2": css`
       font-weight: 700;
       font-size: 40px;
       line-height: 1.2;
-
-      ${media.phone`
-        font-size: 32px;
-      `}
     `,
     "title-3": css`
       font-weight: 700;
-      font-size: 24px;
+      font-size: 22px;
       line-height: 1.15;
-
-      ${media.phone`
-        font-size: 20px;
-      `}
     `,
     body: css`
       font-weight: 400;
@@ -79,6 +76,11 @@ const theme: DefaultTheme = {
       letter-spacing: 1.5px;
       text-transform: uppercase;
     `,
+    "button-text": css`
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 1;
+    `,
   },
   spacing: {
     none: " 0px",
@@ -94,18 +96,19 @@ const theme: DefaultTheme = {
     xxxlarge: "72px",
   },
   shadows: {
-    small: "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)",
+    small: "0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.06)",
     normal:
-      "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+      "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
     medium:
-      "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+      "0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
     large:
-      "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+      "0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
   },
   radii: {
     small: "4px",
     normal: "8px",
     medium: "16px",
+    large: "24px",
     full: "999px",
   },
   breakpoints,

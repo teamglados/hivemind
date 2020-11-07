@@ -15,6 +15,9 @@ declare module "styled-components" {
 
   export interface DefaultTheme {
     colors: {
+      primary: string;
+      secondary: string;
+      "secondary-lightest": string;
       divider: string;
       white: string;
       black: string;
@@ -29,18 +32,14 @@ declare module "styled-components" {
       "grey-900": string;
     };
     typography: {
-      "title-1": any;
+      "large-title": any;
       "title-1": any;
       "title-2": any;
-      "title-2": any;
-      "title-3": any;
       "title-3": any;
       body: any;
-      body: any;
-      "body-small": any;
       "body-small": any;
       overline: any;
-      overline: any;
+      "button-text": any;
     };
     spacing: {
       none: string;
@@ -65,6 +64,7 @@ declare module "styled-components" {
       small: string;
       normal: string;
       medium: string;
+      large: string;
       full: string;
     };
     breakpoints: Breakpoints;

@@ -1,10 +1,15 @@
 import React from "react";
 import { Stack } from "styled-layout";
-import { Text, Spinner } from "../components/common";
+import { Text, GradientText, Spinner } from "../components/common";
+import logo from "../images/logo.svg";
+import textLogo from "../images/text-logo.png";
 
 const Home = () => {
   return (
     <Stack spacing="medium" axis="y">
+      <img src={logo} style={{ width: 48 }} />
+      <img src={textLogo} style={{ width: 300 }} />
+      <GradientText variant="title-1">Home</GradientText>
       <Text variant="title-1">Home</Text>
       <Text variant="title-2">Home</Text>
       <Text variant="title-3">Home</Text>
