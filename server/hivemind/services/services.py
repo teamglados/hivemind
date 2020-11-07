@@ -6,6 +6,8 @@ from hivemind.models import *
 
 ACTIVE_THRESH_SECONDS = 6000
 
+HINT_VOTE_SCORE = 1
+
 
 def create_user(sess, *args, **kwargs):
     user = User(*args, **kwargs)
@@ -79,8 +81,28 @@ async def add_hint(conn, user_id, question_id, value):
 
 
 async def get_hints(conn, user_id, question_id):
+    # TODO add if voted already
     result = await conn.execute(
-        select(Hint).where(Hint.c.user_id != user_id).where(Hint.c.question_id == question_id)
+        select(Hint)
+        .where(Hint.c.user_id != user_id)
+        .where(Hint.c.question_id == question_id)
     )
 
     return [dict(r) for r in result.fetchall()]
+
+
+async def vote_hint(conn, user_id, hint_id, vote_type):
+    prev_vote_res = await conn.execute(
+        select(HintItem)
+        .where(HintItem.c.user_id == user_id)
+        .where(HintItem.c.hint_id == hint_id)
+    )
+    if prev_vote_res.fetchone():
+        raise UserWarning("Already voted!")
+
+    score = HINT_VOTE_SCORE * (1 if vote_type == "up" else -1)
+    result = await conn.execute(
+        HintItem.insert().values(user_id=user_id, hint_id=hint_id, score=score)
+    )
+    return ""
+
