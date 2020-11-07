@@ -4,94 +4,107 @@ from hivemind.config import *
 import asyncio
 from sqlalchemy.sql import select
 
-app = create_api_app(public=('/ping', '/test', '/login', "/questions/list",
-                             "/hints/list", "/hints/add", "/hints/vote",
-                             "/answers/add"))
 
-@app.listener('before_server_start')
+endpoint_tuple = (
+    "/ping",
+    "/test",
+    "/login",
+    "/questions/list",
+    "/hints/list",
+    "/hints/add",
+    "/hints/vote",
+    "/answers/add",
+)
+
+app = create_api_app(public=endpoint_tuple)
+
+
+@app.listener("before_server_start")
 async def open_database(app, loop):
-    app.logger.info('Database connection open')
+    app.logger.info("Database connection open")
 
-@app.listener('after_server_stop')
+
+@app.listener("after_server_stop")
 async def close_database(app, loop):
-    app.logger.info('Database connection close')
+    app.logger.info("Database connection close")
 
-@app.route('/ping', methods=['GET', 'POST'])
-@app.limiter('1 per second')
+
+@app.route("/ping", methods=["GET", "POST"])
+@app.limiter("1 per second")
 async def api_method_ping(request):
-    return dict(
-        ok=1
-    )
+    return dict(ok=1)
 
-@app.route('/test', methods=['GET', 'POST'])
+
+@app.route("/test", methods=["GET", "POST"])
 async def api_method_test(request):
-    user_id = int(request.ctx.params.get('user_id'))
-    question_id = int(request.ctx.params.get('question_id'))
-    result = await services.is_question_active_among_users(request.ctx.conn, user_id, question_id)
+    user_id = int(request.ctx.params.get("user_id"))
+    question_id = int(request.ctx.params.get("question_id"))
+    result = await services.is_question_active_among_users(
+        request.ctx.conn, user_id, question_id
+    )
     return result
 
-@app.route('/login', methods=['GET', 'POST'])
-@app.limiter('1 per second')
-async def api_method_auth(request):
-    await asyncio.sleep(1)
-    name = request.ctx.params.get('name')
 
-    token = jwt_auth_create(scopes=[
-        '/questions',
-    ], data=dict(
-        name=user.name,
-        uid=user.id
-    ))
+@app.route("/login", methods=["GET", "POST"])
+@app.limiter("1 per second")
+async def api_method_auth(request):
+    name = request.ctx.params.get("name")
+    user_id = services.create_user(request.ctx.conn, name)
+
+    token = jwt_auth_create(
+        scopes=list(endpoint_tuple), data=dict(name=user.name, uid=user.id)
+    )
     return token
 
-@app.route('/questions/list', methods=['GET'])
+
+@app.route("/questions/list", methods=["GET"])
 async def api_method_get_questions(request):
     questions = await services.get_questions(
-        request.ctx.conn,
-        int(request.ctx.params.get('user_id'))
+        request.ctx.conn, int(request.ctx.params.get("user_id"))
     )
     return questions
 
-@app.route('/users/question', methods=['GET'])
+
+@app.route("/users/question", methods=["GET"])
 async def api_method_user_active_question(request):
-    user_id = int(request.ctx.params.get('user_id'))
-    question_id = int(request.ctx.params.get('question_id'))
+    user_id = int(request.ctx.params.get("user_id"))
+    question_id = int(request.ctx.params.get("question_id"))
     await services.activate_question_for_user(request.ctx.conn, user_id, question_id)
     return None
 
 
-@app.route('/hints/add', methods=['GET'])
+@app.route("/hints/add", methods=["GET"])
 async def api_method_add_hint(request):
-    user_id = int(request.ctx.params.get('user_id'))
-    question_id = int(request.ctx.params.get('question_id'))
-    value = request.ctx.params.get('value')
+    user_id = int(request.ctx.params.get("user_id"))
+    question_id = int(request.ctx.params.get("question_id"))
+    value = request.ctx.params.get("value")
 
     return await services.add_hint(request.ctx.conn, user_id, question_id, value)
 
-@app.route('/hints/list', methods=['GET'])
+
+@app.route("/hints/list", methods=["GET"])
 async def api_method_get_hints(request):
-    user_id = int(request.ctx.params.get('user_id'))
-    question_id = int(request.ctx.params.get('question_id'))
+    user_id = int(request.ctx.params.get("user_id"))
+    question_id = int(request.ctx.params.get("question_id"))
     return await services.get_hints(request.ctx.conn, user_id, question_id)
 
-@app.route('/hints/vote', methods=['GET'])
+
+@app.route("/hints/vote", methods=["GET"])
 async def api_method_hints_vote(request):
-    hint_id = int(request.ctx.params.get('hint_id'))
-    user_id = int(request.ctx.params.get('user_id'))
-    vote_type = request.ctx.params.get('vote_type').lower()
+    hint_id = int(request.ctx.params.get("hint_id"))
+    user_id = int(request.ctx.params.get("user_id"))
+    vote_type = request.ctx.params.get("vote_type").lower()
     return await services.vote_hint(request.ctx.conn, user_id, hint_id, vote_type)
 
-@app.route('/answers/add', methods=['GET'])
+
+@app.route("/answers/add", methods=["GET"])
 async def api_method_add_answer(request):
-    user_id = int(request.ctx.params.get('user_id'))
-    question_id = int(request.ctx.params.get('question_id'))
-    value = request.ctx.params.get('value')
+    user_id = int(request.ctx.params.get("user_id"))
+    question_id = int(request.ctx.params.get("question_id"))
+    value = request.ctx.params.get("value")
     return await services.add_answer(request.ctx.conn, user_id, question_id, value)
 
-if __name__ == '__main__':
-    app.run(
-        access_log=True,
-        debug=True,
-        host=HTTP_HOST,
-        port=HTTP_PORT
-    )
+
+if __name__ == "__main__":
+    app.run(access_log=True, debug=True, host=HTTP_HOST, port=HTTP_PORT)
+
