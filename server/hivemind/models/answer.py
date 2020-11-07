@@ -6,7 +6,7 @@ from sqlalchemy import Integer, Column, String, Float, DateTime, ForeignKey, Tab
 from hivemind.runtime import metadata
 
 
-User = Table('answer', metadata,
+Answer = Table('answer', metadata,
     Column('id', Integer, primary_key=True),
     Column('value', String, nullable=False),
     Column("score", Float, nullable=False),
