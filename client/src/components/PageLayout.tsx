@@ -9,6 +9,7 @@ const PageLayout: React.FC = ({ children }) => {
       <Navigation>
         <Sidebar />
       </Navigation>
+
       <Content>{children}</Content>
     </Layout>
   );
@@ -34,6 +35,8 @@ const Navigation = styled.nav`
 
 const Content = styled.main`
   flex: 1;
+  display: flex;
+  flex-direction: column;
   padding: ${(p) => p.theme.spacing.large};
   max-height: 100vh;
   overflow: auto;

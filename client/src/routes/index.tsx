@@ -8,6 +8,7 @@ import Main from "./Main";
 const NotFound = React.lazy(() => import("./NotFound"));
 const Login = React.lazy(() => import("./Login"));
 const Home = React.lazy(() => import("./Home"));
+const Question = React.lazy(() => import("./Question"));
 
 const AppRoutes = () => {
   return (
@@ -18,6 +19,14 @@ const AppRoutes = () => {
           element={
             <Page>
               <Home />
+            </Page>
+          }
+        />
+        <Route
+          path="questions/:i"
+          element={
+            <Page>
+              <Question />
             </Page>
           }
         />

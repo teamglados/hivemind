@@ -7,12 +7,13 @@ import logo from "../images/logo.svg";
 import { Text, GradientText, Button } from "../components/common";
 import { useAppState } from "../models";
 import { sleep } from "../utils/common";
+import { useInputFocusMount } from "../utils/hooks";
 
 const Login = () => {
   const [user, setUser] = React.useState("");
   const [isLoggingIn, setLoggingIn] = React.useState(false);
   const [focused, setFocused] = React.useState(false);
-  const inputRef = React.useRef<HTMLInputElement>(null);
+  const inputRef = useInputFocusMount();
   const { actions } = useAppState();
   const navigate = useNavigate();
 
@@ -28,10 +29,6 @@ const Login = () => {
       actions.user.login({ user, navigate });
     }
   };
-
-  React.useEffect(() => {
-    inputRef.current && inputRef.current.focus();
-  }, []);
 
   return (
     <WrapperStack axis="y" spacing="xlarge" align="center" justify="center">
