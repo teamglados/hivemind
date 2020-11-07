@@ -1,16 +1,14 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Integer, Float
+from datetime import datetime
 
-from hivemind.models.mixin import TimeStampMixin
-from hivemind.models.base import Base
-from hivemind.models.user import User
+from sqlalchemy import Integer, Column, String, Float, DateTime, ForeignKey, Table
+
+from hivemind.runtime import metadata
 
 
-class HintItem(Base, TimeStampMixin):
-    # columns
-    id = Column(Integer, primary_key=True)
-    score = Column(Float, nullable=False)
-
-    # relationships
-    hint_id = Column(Integer, ForeignKey("hint.id"), nullable=False)
-    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
-
+User = Table('hint_item', metadata,
+    Column('id', Integer, primary_key=True),
+    Column("score", Float, nullable=False),
+    Column("user_id", Integer, ForeignKey("user.id"), nullable=False),
+    Column("hint_id", Integer, ForeignKey("hint.id"), nullable=False),
+    Column("created_at", DateTime, default=datetime.utcnow)
+)

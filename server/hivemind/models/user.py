@@ -1,14 +1,14 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Integer
+from datetime import datetime
 
-from hivemind.models.mixin import TimeStampMixin
-from hivemind.models.base import Base
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Integer, MetaData, Table
+
+from hivemind.runtime import metadata
 
 
-class User(Base, TimeStampMixin):
-    # columns
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-    active_question_last_active = Column(DateTime, nullable=True)
-
-    # relationships
-    active_question_id = Column(Integer, ForeignKey("question.id"), nullable=True)
+User = Table('user', metadata,
+    Column('id', Integer, primary_key=True),
+    Column('name', String, nullable=False),
+    Column("active_question_id", Integer, ForeignKey("question.id"), nullable=True),
+    Column("active_question_last_active", DateTime, nullable=True),
+    Column("created_at", DateTime, default=datetime.utcnow)
+)

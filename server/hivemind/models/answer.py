@@ -1,16 +1,17 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Integer, Float
 
-from hivemind.models.mixin import TimeStampMixin
-from hivemind.models.base import Base
-from hivemind.models.user import User
+from datetime import datetime
+
+from sqlalchemy import Integer, Column, String, Float, DateTime, ForeignKey, Table
+
+from hivemind.runtime import metadata
 
 
-class Answer(Base, TimeStampMixin):
-    # columns
-    id = Column(Integer, primary_key=True)
-    value = Column(String, nullable=False)
-    score = Column(Float, nullable=False)
+User = Table('answer', metadata,
+    Column('id', Integer, primary_key=True),
+    Column('value', String, nullable=False),
+    Column("score", Float, nullable=False),
 
-    # relationships
-    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
-    question_id = Column(Integer, ForeignKey("question.id"), nullable=False)
+    Column("user_id", Integer, ForeignKey("user.id"), nullable=False),
+    Column("question_id", Integer, ForeignKey("question.id"), nullable=False),
+    Column("created_at", DateTime, default=datetime.utcnow)
+)

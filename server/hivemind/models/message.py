@@ -1,23 +1,16 @@
-import uuid
+from datetime import datetime
 
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Integer, Float
+from sqlalchemy import Integer, Column, String, Float, DateTime, ForeignKey, Table
 from sqlalchemy.dialects.postgresql import UUID
 
-from hivemind.models.mixin import TimeStampMixin
-from hivemind.models.base import Base
-from hivemind.models.user import User
+from hivemind.runtime import metadata
 
 
-class Message(Base, TimeStampMixin):
-    # columns
-    id = Column(Integer, primary_key=True)
-    score = Column(Float, nullable=False)
-    discussion_id = Column(
-        UUID(as_uuid=True), default=uuid.uuid4, unique=True, nullable=False
-    )
+User = Table('message', metadata,
+    Column('id', Integer, primary_key=True),
+    Column("score", Float, nullable=False),
 
-    # relationships
-    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
-
-    # TODO
-    # score = Column(Float, nullable=False)
+    Column('discussion_id', UUID(as_uuid=True), unique=True, nullable=False),
+    Column("user_id", Integer, ForeignKey("user.id"), nullable=False),
+    Column("created_at", DateTime, default=datetime.utcnow)
+)
