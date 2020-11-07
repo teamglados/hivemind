@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from sqlalchemy.sql import select
 
 from hivemind.models import *
+from hivemind.utils.stopwords import STOPWORDS
 
 ACTIVE_THRESH_SECONDS = 6000
 
@@ -106,3 +107,15 @@ async def vote_hint(conn, user_id, hint_id, vote_type):
     )
     return ""
 
+async def add_answer(conn, user_id, question_id, value):
+    words = value.lower().strip().split()
+    stops = set(STOPWORDS)
+    meaningful_words = [w for w in words if not w in stops]
+    answer = " ".join(meaningful_words)
+
+
+    result = await conn.execute(
+        Answer.insert()
+        .values(user_id=user_id, question_id=question_id, value=value)
+        .returning(Answer.c.id)
+    )
