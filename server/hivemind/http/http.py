@@ -132,6 +132,7 @@ def create_api_app(name='api', limit=5, public=tuple()):
 
     @app.middleware('response')
     async def api_result_json(request, result):
-       await request.ctx.conn.close()
+        await request.ctx.conn.commit()
+        await request.ctx.conn.close()
 
     return app
