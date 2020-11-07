@@ -10,3 +10,4 @@ __pycache__
 *.o
 *.so
 *.csv
+.mypy_cache
