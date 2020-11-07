@@ -21,6 +21,21 @@ def check_answer_correct(question, answer):
     return question.answer == answer.value
 
 
+def get_extended_question(question, answers):
+    question_answers = [a for a in answers if question.id == a.question_id]
+
+    is_correct = False
+    for qa in question_answers:
+        if check_answer_correct(question, qa):
+            is_correct = True
+            break
+
+    q_dict = dict(question)
+    q_dict["is_correct"] = is_correct
+    q_dict["answer_count"] = len(question_answers)
+    return q_dict
+
+
 async def get_questions(conn, user_id):
     """ return all question """
 
@@ -40,9 +55,7 @@ async def get_questions(conn, user_id):
                 is_correct = True
                 break
 
-        q_dict = dict(q)
-        q_dict["is_correct"] = is_correct
-        q_dict["answer_count"] = len(question_answers)
+        q_dict = get_extended_question(q, qa)
         extended_questions.append(q_dict)
 
     return extended_questions
@@ -107,15 +120,31 @@ async def vote_hint(conn, user_id, hint_id, vote_type):
     )
     return ""
 
+
 async def add_answer(conn, user_id, question_id, value):
     words = value.lower().strip().split()
     stops = set(STOPWORDS)
     meaningful_words = [w for w in words if not w in stops]
     answer = " ".join(meaningful_words)
 
-
     result = await conn.execute(
         Answer.insert()
         .values(user_id=user_id, question_id=question_id, value=value)
         .returning(Answer.c.id)
     )
+
+    return await get_question(conn, user_id, question_id)
+
+
+async def get_question(conn, user_id, question_id):
+    result = await conn.execute(select(Question).where(Question.c.id == question_id))
+    question = result.fetchone()
+
+    result = await conn.execute(
+        select(Answer)
+        .where(Answer.c.user_id == user_id)
+        .where(Answer.c.question_id == question_id)
+    )
+    answers = result.fetchall()
+
+    return get_extended_question(question, answers)

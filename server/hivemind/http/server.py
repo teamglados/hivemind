@@ -4,7 +4,9 @@ from hivemind.config import *
 import asyncio
 from sqlalchemy.sql import select
 
-app = create_api_app(public=('/ping', '/test', '/login', "/questions/list", "/hints/list", "/hints/add", "/hints/vote"))
+app = create_api_app(public=('/ping', '/test', '/login', "/questions/list",
+                             "/hints/list", "/hints/add", "/hints/vote",
+                             "/answers/add"))
 
 @app.listener('before_server_start')
 async def open_database(app, loop):
@@ -78,6 +80,13 @@ async def api_method_hints_vote(request):
     user_id = int(request.ctx.params.get('user_id'))
     vote_type = request.ctx.params.get('vote_type').lower()
     return await services.vote_hint(request.ctx.conn, user_id, hint_id, vote_type)
+
+@app.route('/answers/add', methods=['GET'])
+async def api_method_add_answer(request):
+    user_id = int(request.ctx.params.get('user_id'))
+    question_id = int(request.ctx.params.get('question_id'))
+    value = request.ctx.params.get('value')
+    return await services.add_answer(request.ctx.conn, user_id, question_id, value)
 
 if __name__ == '__main__':
     app.run(
