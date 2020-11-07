@@ -9,7 +9,7 @@ import { GradientText, Text } from "./common";
 const Sidebar = () => {
   return (
     <Wrapper>
-      <LogoStack axis="x" spacing="small" align="center" justify="center">
+      <LogoStack axis="x" spacing="xsmall" align="center" justify="center">
         <Logo src={logo} />
         <GradientText variant="title-2">HiveMind</GradientText>
       </LogoStack>
@@ -30,7 +30,7 @@ const Sidebar = () => {
                   variant="button-text"
                   color={index === 2 ? "grey-800" : "grey-600"}
                 >
-                  Exercise {index}
+                  Exercise {index + 1}
                 </Text>
               </ExerciseItem>
             ))}
@@ -42,7 +42,7 @@ const Sidebar = () => {
 };
 
 const Wrapper = styled(Stack).attrs({ axis: "y", spacing: "medium" })`
-  padding: ${(p) => p.theme.spacing.normal};
+  padding: ${(p) => p.theme.spacing.medium};
 `;
 
 const LogoStack = styled(Stack)`
@@ -66,6 +66,7 @@ const ExerciseList = styled(Stack).attrs({
 
 const ExerciseItem = styled.li<{ active: boolean }>`
   position: relative;
+  margin: 0 -${(p) => p.theme.spacing.xsmall};
   padding: ${(p) => p.theme.spacing.normal};
   padding-left: ${(p) => p.theme.spacing.xlarge};
   border-radius: ${(p) => p.theme.radii.medium};

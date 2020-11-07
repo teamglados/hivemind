@@ -17,6 +17,8 @@ const PageLayout: React.FC = ({ children }) => {
 const Layout = styled.div`
   height: 100vh;
   width: 100vw;
+  max-width: 1400px;
+  margin: 0 auto;
   display: flex;
   flex-direction: row;
 `;
@@ -30,7 +32,15 @@ const Navigation = styled.nav`
 
 const Content = styled.main`
   flex: 1;
-  padding: ${(p) => p.theme.spacing.normal};
+  padding: ${(p) => p.theme.spacing.medium} ${(p) => p.theme.spacing.large};
+  max-height: 100vh;
+  overflow: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 export default PageLayout;
