@@ -54,7 +54,7 @@ async def get_questions(conn, user_id):
                 is_correct = True
                 break
 
-        q_dict = get_extended_question(q, qa)
+        q_dict = get_extended_question(q, question_answers)
         extended_questions.append(q_dict)
 
     return extended_questions
