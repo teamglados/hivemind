@@ -12,6 +12,9 @@ ACTIVE_THRESH_SECONDS = 6000
 HINT_VOTE_SCORE = 1
 HINT_PRICE = 2
 
+HINT_MAX = 70
+MESSAGE_MAX = 20
+
 
 def get_extended_question(question, answers):
     question_answers = [a for a in answers if question.id == a.question_id]
@@ -234,13 +237,13 @@ async def get_user(conn, user_id):
         .group_by(Message.c.discussion_id)
     )
     message_scores = result.fetchall()
-    message_score = min(sum([q.score for q in message_scores]), 0)
+    message_score = min(sum([q.score for q in message_scores]), MESSAGE_MAX)
 
     result = await conn.execute(select(Hint).where(Hint.c.user_id == user_id))
     hint_score = 0
     for hint in result.fetchall():
         hint_score += await get_hint_score(conn, hint.id)
-    hint_score = min(hint_score, 30)
+    hint_score = min(hint_score, HINT_MAX)
 
     result = await conn.execute(
         select(HintPurchase).where(HintPurchase.c.user_id == user_id)
