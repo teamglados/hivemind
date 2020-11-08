@@ -24,7 +24,8 @@ endpoint_tuple = (
     "/message/vote",
     "/hints/open",
     "/hintpurchases/list",
-    "/users/question"
+    "/users/question",
+    "/questions/active",
 )
 
 app = create_api_app(public=endpoint_tuple)
@@ -49,6 +50,16 @@ async def api_method_ping(request):
 
 @app.route("/test", methods=["GET", "POST"])
 async def api_method_test(request):
+    user_id = get_user_id_from_token(request)
+    question_id = int(request.ctx.params.get("question_id"))
+    result = await services.is_question_active_among_users(
+        request.ctx.conn, user_id, question_id
+    )
+    return result
+
+
+@app.route("/questions/active", methods=["GET", "POST"])
+async def api_method_is_active(request):
     user_id = get_user_id_from_token(request)
     question_id = int(request.ctx.params.get("question_id"))
     result = await services.is_question_active_among_users(
@@ -114,10 +125,12 @@ async def api_method_hints_open(request):
     hint_id = int(request.ctx.params.get("hint_id"))
     return await services.open_hint(request.ctx.conn, user_id, hint_id)
 
+
 @app.route("/hintpurchases/list", methods=["GET"])
 async def api_method_get_hint_purchases(request):
     user_id = get_user_id_from_token(request)
     return await services.get_hint_purchases(request.ctx.conn, user_id)
+
 
 @app.route("/answers/add", methods=["GET"])
 async def api_method_add_answer(request):
