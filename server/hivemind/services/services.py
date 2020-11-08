@@ -129,8 +129,6 @@ async def get_hint_score(conn, hint_id):
     result = await conn.execute(select(HintItem).where(HintItem.c.hint_id == hint_id))
     hint_items = result.fetchall()
     # always at least hint price
-    if not hint_items:
-        return -1 * HINT_PRICE
     return max(
         -1 * HINT_PRICE, min(sum([h.score * HINT_PRICE for h in hint_items]), 10)
     )
@@ -164,7 +162,7 @@ async def get_hints(conn, user_id, question_id):
 
         dhint = dict(hint)
         dhint["purchased"] = has_purchased
-        dhint["total_score"] = await get_hint_score(conn, hint.id)
+        dhint["total_score"] = await get_hint_score(conn, hint.id) or 2
         dict_hints.append(dhint)
 
     return sorted(dict_hints, key=lambda x: x["total_score"], reverse=True)[0:MAX_N_HINTS]
