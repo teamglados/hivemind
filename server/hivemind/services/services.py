@@ -141,7 +141,7 @@ async def get_hints(conn, user_id, question_id):
     return dict_hints
 
 
-async def vote_hint(conn, user_id, hint_id, vote_type):
+async def vote_hint(conn, user_id, hint_id, score):
     prev_vote_res = await conn.execute(
         select(HintItem)
         .where(HintItem.c.user_id == user_id)
@@ -150,7 +150,6 @@ async def vote_hint(conn, user_id, hint_id, vote_type):
     if prev_vote_res.fetchone():
         raise UserWarning("Already voted!")
 
-    score = 1 if vote_type == "up" else -1
     result = await conn.execute(
         HintItem.insert().values(user_id=user_id, hint_id=hint_id, score=score)
     )
@@ -259,9 +258,7 @@ async def list_messages(conn, discussion_id):
     return [dict(m) for m in result.fetchall()]
 
 
-async def vote_message(conn, message_id, vote_type):
-    score = 1 if vote_type == "up" else -1
-
+async def vote_message(conn, message_id, score):
     result = await conn.execute(select(Message).where(Message.c.id == message_id))
     message = result.fetchone()
     score = message.score + score

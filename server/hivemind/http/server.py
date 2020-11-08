@@ -103,8 +103,8 @@ async def api_method_get_hints(request):
 async def api_method_hints_vote(request):
     hint_id = int(request.ctx.params.get("hint_id"))
     user_id = get_user_id_from_token(request)
-    vote_type = request.ctx.params.get("vote_type").lower()
-    return await services.vote_hint(request.ctx.conn, user_id, hint_id, vote_type)
+    score = int(request.ctx.params.get("score"))
+    return await services.vote_hint(request.ctx.conn, user_id, hint_id, score)
 
 
 @app.route("/hints/open", methods=["GET"])
@@ -167,8 +167,8 @@ async def api_method_list_messages(request):
 async def api_method_vote_message(request):
     user_id = get_user_id_from_token(request)
     message_id = int(request.ctx.params.get("message_id"))
-    vote_type = request.ctx.params.get("vote_type").lower()
-    return await services.vote_message(request.ctx.conn, message_id, vote_type)
+    score = int(request.ctx.params.get("score"))
+    return await services.vote_message(request.ctx.conn, message_id, score)
 
 
 if __name__ == "__main__":
