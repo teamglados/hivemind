@@ -17,24 +17,24 @@ resource "aws_route53_record" "ApiLB" {
   }
 }
 
-#resource "aws_route53_record" "AppCDN" {
-#  zone_id = var.ZoneID-hivemindlivecom
-#  name = "www.hivemindlive.com"
-#  type = "A"
-#  alias {
-#    name = aws_cloudfront_distribution.App.domain_name
-#    zone_id = var.ZoneID-CloudFront
-#    evaluate_target_health = false
-#  }
-#}
-#
-#resource "aws_route53_record" "AppCDN2" {
-#  zone_id = var.ZoneID-hivemindlivecom
-#  name = "hivemindlive.com"
-#  type = "A"
-#  alias {
-#    name = aws_cloudfront_distribution.App.domain_name
-#    zone_id = var.ZoneID-CloudFront
-#    evaluate_target_health = false
-#  }
-#}
+resource "aws_route53_record" "AppCDN" {
+  zone_id = var.ZoneID-hivemindlivecom
+  name = "www.hivemindlive.com"
+  type = "A"
+  alias {
+    name = aws_cloudfront_distribution.App.domain_name
+    zone_id = var.ZoneID-CloudFront
+    evaluate_target_health = false
+  }
+}
+
+resource "aws_route53_record" "AppCDN2" {
+  zone_id = var.ZoneID-hivemindlivecom
+  name = "hivemindlive.com"
+  type = "A"
+  alias {
+    name = aws_cloudfront_distribution.App.domain_name
+    zone_id = var.ZoneID-CloudFront
+    evaluate_target_health = false
+  }
+}
