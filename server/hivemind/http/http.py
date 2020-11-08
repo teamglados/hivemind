@@ -55,10 +55,8 @@ def create_api_error_handler():
             super().default(request, exception)
             result = get_api_response(request)
             result['error'] = dict(
-                error=dict(
-                    type=type(exception).__name__,
-                    message=str(exception)
-                )
+                type=type(exception).__name__,
+                message=str(exception)
             ) 
             return sanic.response.HTTPResponse(get_json_string(result),
                 #headers={"Access-Control-Allow-Origin": "*"},
