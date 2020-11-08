@@ -17,10 +17,10 @@ const Sidebar = () => {
     <Wrapper>
       <Content axis="y" spacing="none">
         <Stack axis="y" spacing="large" style={{ flex: 1 }}>
-          <LogoStack axis="x" spacing="xsmall" align="center">
+          <Stack axis="x" spacing="xsmall" align="center">
             <Logo src={logo} />
             <GradientText variant="title-2">HiveMind</GradientText>
-          </LogoStack>
+          </Stack>
 
           <Divider size="large" color="grey-200" />
 
@@ -83,16 +83,12 @@ const Sidebar = () => {
 };
 
 const Wrapper = styled(Stack).attrs({ axis: "y", spacing: "medium" })`
-  padding: ${(p) => p.theme.spacing.medium};
+  padding: ${(p) => p.theme.spacing.large} ${(p) => p.theme.spacing.medium};
   height: 100%;
 `;
 
 const Content = styled(Stack)`
   height: 100%;
-`;
-
-const LogoStack = styled(Stack)`
-  padding-top: ${(p) => p.theme.spacing.large};
 `;
 
 const Logo = styled.img`
