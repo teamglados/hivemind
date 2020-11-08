@@ -1,16 +1,19 @@
 import * as React from "react";
-import { Stack } from "styled-layout";
+import { Stack, Divider } from "styled-layout";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import { FaHandHoldingHeart } from "react-icons/fa";
+import { BiSkipNextCircle } from "react-icons/bi";
 
-import { Text, Textarea } from "./common";
+import { Button, Text, Textarea } from "./common";
 
 type Props = {
   onHintSubmit: any;
+  onSkip: any;
+  submittingHint: boolean;
 };
 
-const GiveHintForm = ({ onHintSubmit }: Props) => {
+const GiveHintForm = ({ onHintSubmit, onSkip, submittingHint }: Props) => {
   const [hint, setHint] = React.useState("");
 
   const submitAnswer = (event: any) => {
@@ -38,6 +41,7 @@ const GiveHintForm = ({ onHintSubmit }: Props) => {
           <Text variant="title-2" align="center">
             Give hint to help others
           </Text>
+
           <Text variant="body" align="center">
             Twitter non-disclosure agreement vesting period user experience
             direct mailing channels iPad social media interaction design return
@@ -49,6 +53,7 @@ const GiveHintForm = ({ onHintSubmit }: Props) => {
             onSubmit={submitAnswer}
             value={hint}
             onChange={setHint}
+            buttonLoading={submittingHint}
             buttonLabel="Submit hint"
             buttonIcon={
               <FaHandHoldingHeart
@@ -57,6 +62,25 @@ const GiveHintForm = ({ onHintSubmit }: Props) => {
               />
             }
           />
+
+          <Divider size="large" color="grey-200" />
+
+          <Stack axis="x" spacing="normal" align="center" justify="center">
+            <Text variant="body" align="center">
+              You can also skip giving a hint.
+            </Text>
+
+            <div>
+              <Button
+                size="small"
+                variant="dimmed"
+                icon={<BiSkipNextCircle size={20} />}
+                onClick={onSkip}
+              >
+                Skip
+              </Button>
+            </div>
+          </Stack>
         </Stack>
       </Content>
     </Wrapper>

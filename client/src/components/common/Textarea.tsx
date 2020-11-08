@@ -39,7 +39,7 @@ const Textarea = ({
       <Button
         type="submit"
         variant="primary"
-        disabled={value.length === 0}
+        disabled={value.length === 0 || buttonLoading}
         loading={buttonLoading}
         onClick={onSubmit}
         icon={buttonIcon}

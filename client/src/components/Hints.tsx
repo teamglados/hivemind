@@ -40,10 +40,9 @@ const Hints = ({ onHintClick }: Props) => {
     >
       {state.hint.hints.map((hint) => {
         const deg = randBetween(0, 360);
-        console.log(hint.purchased);
 
         return (
-          <div style={{ opacity: hint.purchased ? 0.3 : 1 }}>
+          <div key={hint.id} style={{ opacity: hint.purchased ? 0.3 : 1 }}>
             <Story
               key={hint.id}
               deg={deg}
