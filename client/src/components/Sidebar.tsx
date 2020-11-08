@@ -6,6 +6,7 @@ import { FiAward, FiLogOut } from "react-icons/fi";
 import logo from "../images/logo.svg";
 import { range } from "../utils/common";
 import { Button, GradientText, Text } from "./common";
+
 import theme from "../constants/theme";
 import { useAppState } from "../models";
 
@@ -16,7 +17,7 @@ const Sidebar = () => {
     <Wrapper>
       <Content axis="y" spacing="none">
         <Stack axis="y" spacing="large" style={{ flex: 1 }}>
-          <LogoStack axis="x" spacing="xsmall" align="center" justify="center">
+          <LogoStack axis="x" spacing="xsmall" align="center">
             <Logo src={logo} />
             <GradientText variant="title-2">HiveMind</GradientText>
           </LogoStack>

@@ -1,4 +1,5 @@
 import { AsyncAction } from "overmind";
+import { NavigateFunction } from "react-router";
 import { RequestState, Hint } from "./types";
 
 type State = {
@@ -11,16 +12,17 @@ export const state: State = {
   addHint: RequestState.INITIAL,
 };
 
-const addHint: AsyncAction<{ hint: string; questionId: number }> = async (
-  { state, effects },
-  { hint, questionId }
-) => {
+const addHint: AsyncAction<{
+  navigate: NavigateFunction;
+  hint: string;
+  questionId: number;
+}> = async ({ state, effects }, { hint, questionId, navigate }) => {
   state.hint.addHint = RequestState.PENDING;
   const data = await effects.api.addHint({ questionId, hint });
 
   if (!data.error) {
-    // state.hint.hints = data.result;
     state.hint.addHint = RequestState.SUCCESS;
+    setTimeout(() => navigate("/home"), 1000);
   } else {
     state.hint.addHint = RequestState.ERROR;
   }

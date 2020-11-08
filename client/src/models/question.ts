@@ -55,8 +55,14 @@ const setAnswerState: Action<AnswerState> = ({ state }, answerState) => {
   state.question.answerState = answerState;
 };
 
+const resetStates: Action = ({ state }) => {
+  state.question.answerState = AnswerState.INITIAL;
+  state.question.answerQuestion = RequestState.INITIAL;
+};
+
 export const actions = {
   getQuestions,
   answerQuestion,
   setAnswerState,
+  resetStates,
 };
