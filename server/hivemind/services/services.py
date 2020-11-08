@@ -21,6 +21,7 @@ SIMILARITY_THRESHOLD = 2.0
 
 MAX_N_HINTS = 5
 
+
 def get_extended_question(question, answers):
     question_answers = [a for a in answers if question.id == a.question_id]
 
@@ -164,7 +165,9 @@ async def get_hints(conn, user_id, question_id):
         dhint["total_score"] = await get_hint_score(conn, hint.id) or 2
         dict_hints.append(dhint)
 
-    return sorted(dict_hints, key=lambda x: x["total_score"], reverse=True)[0:MAX_N_HINTS]
+    return sorted(dict_hints, key=lambda x: x["total_score"], reverse=True)[
+        0:MAX_N_HINTS
+    ]
 
 
 async def vote_hint(conn, user_id, hint_id, score):
@@ -234,6 +237,12 @@ async def get_user(conn, user_id):
             .where(User.c.id == user_id)
             .values(active_question_last_active=None, active_question_id=None)
         )
+        if user.active_discussion_id:
+            await conn.execute(
+                User.update()
+                .where(User.c.active_discussion_id == user.active_discussion_id)
+                .values(active_discussion_id=None)
+            )
         duser["active_question_last_active"] = None
         duser["active_discussion_id"] = None
 
@@ -248,7 +257,7 @@ async def get_user(conn, user_id):
             if not is_right_question:
                 await conn.execute(
                     User.update()
-                    .where(User.c.id == user_id)
+                    .where(User.c.active_discussion_id == active_discussion_id)
                     .values(active_discussion_id=None)
                 )
                 duser["active_discussion_id"] = None
@@ -339,9 +348,14 @@ async def does_question_and_discussion_match(conn, discussion_id, question_id):
 
 
 async def close_discussion(conn, user_id):
-    await conn.execute(
-        User.update().where(User.c.id == user_id).values(active_discussion_id=None)
-    )
+    result = await conn.execute(select(User).where(User.c.id == user_id))
+    user = result.fetchone()
+    if user and user.active_discussion_id:
+        await conn.execute(
+            User.update()
+            .where(User.c.active_discussion_id == user.active_discussion_id)
+            .values(active_discussion_id=None)
+        )
 
 
 async def add_message(conn, user_id, discussion_id, value):
