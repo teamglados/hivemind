@@ -254,10 +254,10 @@ async def get_user(conn, user_id):
             is_right_question = await does_question_and_discussion_match(
                 conn, user.active_discussion_id, user.active_question_id
             )
-            if not is_right_question:
+            if not is_right_question and user.active_discussion_id:
                 await conn.execute(
                     User.update()
-                    .where(User.c.active_discussion_id == active_discussion_id)
+                    .where(User.c.active_discussion_id == user.active_discussion_id)
                     .values(active_discussion_id=None)
                 )
                 duser["active_discussion_id"] = None
