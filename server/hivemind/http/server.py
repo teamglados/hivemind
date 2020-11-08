@@ -23,7 +23,8 @@ endpoint_tuple = (
     "/message/list",
     "/message/vote",
     "/hints/open",
-    "/hintpurchases/list"
+    "/hintpurchases/list",
+    "/users/question"
 )
 
 app = create_api_app(public=endpoint_tuple)
@@ -80,7 +81,7 @@ async def api_method_user_active_question(request):
     user_id = get_user_id_from_token(request)
     question_id = int(request.ctx.params.get("question_id"))
     await services.activate_question_for_user(request.ctx.conn, user_id, question_id)
-    return None
+    return ""
 
 
 @app.route("/hints/add", methods=["GET"])
@@ -137,6 +138,7 @@ async def api_method_start_discussion(request):
     user_id = get_user_id_from_token(request)
     question_id = int(request.ctx.params.get("question_id"))
     result = await services.get_discussion_id(request.ctx.conn, user_id, question_id)
+    await services.add_discussion_to_user(request.ctx.conn, user_id, result)
     return {"discussion_id": str(result)}
 
 

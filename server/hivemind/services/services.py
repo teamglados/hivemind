@@ -69,7 +69,7 @@ async def get_questions(conn, user_id):
 async def activate_question_for_user(conn, user_id, question_id):
     return await conn.execute(
         User.update()
-        .where(users.c.id == user_id)
+        .where(User.c.id == user_id)
         .values(
             active_question_id=question_id,
             active_question_last_active=datetime.utcnow(),
@@ -207,6 +207,12 @@ async def get_user(conn, user_id):
     result = await conn.execute(select(User).where(User.c.id == user_id))
     user = result.fetchone()
 
+    result = await conn.execute(
+        select([func.count(User.c.active_discussion_id)])
+        .where(User.c.active_discussion_id == user.active_discussion_id)
+    )
+    chat_user_count = result.fetchone()
+    chat_active = True if chat_user_count and chat_user_count[0] > 1 else False
     duser = dict(user)
     if (
         user.active_question_last_active
@@ -214,7 +220,7 @@ async def get_user(conn, user_id):
     ):
         await conn.execute(
             User.update()
-            .where(users.c.id == user_id)
+            .where(User.c.id == user_id)
             .values(active_question_last_active=None, active_question_id=None)
         )
         duser["active_question_last_active"] = None
@@ -257,6 +263,7 @@ async def get_user(conn, user_id):
     duser["message_score"] = message_score
     duser["hint_purchase_score"] = hint_purchase_score
     duser["max_score"] = question_score
+    duser["chat_active"] = chat_active
     return duser
 
 
@@ -276,16 +283,17 @@ async def create_discussion(conn, user_id, question_id):
 
 
 async def get_discussion_id(conn, user_id, question_id):
+
     result = await conn.execute(
-        select([User.c.active_discussion_id])
+        select([func.count(User.c.active_discussion_id), User.c.active_discussion_id])
         .where(User.c.active_discussion_id != None)
         .where(User.c.active_question_id == question_id)
         .group_by(User.c.active_discussion_id)
-        .having(func.count(User.c.active_discussion_id) < 2)
     )
-
     result_row = result.fetchone()
+    print("LOLOL", result_row)
     if result_row:
+        print("LOLOL", result_row.active_discussion_id)
         return result_row.active_discussion_id
     else:
         return await create_discussion(conn, user_id, question_id)
@@ -293,7 +301,7 @@ async def get_discussion_id(conn, user_id, question_id):
 
 async def close_discussion(conn, user_id):
     await conn.execute(
-        User.update().where(users.c.id == user_id).values(active_discussion_id=None)
+        User.update().where(User.c.id == user_id).values(active_discussion_id=None)
     )
 
 
@@ -340,3 +348,8 @@ async def get_hint_purchases(conn, user_id):
         select(HintPurchase).where(HintPurchase.c.id == user_id)
     )
     return [dict(r) for r in result.fetchall()]
+
+
+async def add_discussion_to_user(conn, user_id, discussion_id):
+    await conn.execute(User.update().values(active_discussion_id=discussion_id).where(User.c.id == user_id))
+    return ""
