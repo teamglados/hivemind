@@ -23,5 +23,11 @@ export type Question = {
 };
 
 export type Hint = {
-  foo: string;
+  created_at: string;
+  id: number;
+  purchased: boolean;
+  question_id: number;
+  total_score: number;
+  user_id: number;
+  value: string;
 };

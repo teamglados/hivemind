@@ -5,39 +5,49 @@ import { motion } from "framer-motion";
 import { BsInfoSquareFill } from "react-icons/bs";
 import { IoIosCheckmarkCircle, IoIosCloseCircle } from "react-icons/io";
 
+import { Hint, RequestState } from "../models/types";
 import { Button, Text } from "./common";
+import { useAppState } from "../models";
 
-type Hint = {
+type ActiveHint = {
   gradientDeg: number;
-  i: number;
+  hint: Hint;
 };
 
 type Props = {
   onPositiveAction: any;
   onNegativeAction: any;
   onCancel: any;
-  hint: Hint;
+  activeHint: ActiveHint;
 };
 
 const HintStory = ({
   onPositiveAction,
   onNegativeAction,
   onCancel,
-  hint,
+  activeHint,
 }: Props) => {
   const [hasAcceptedPenalty, setHasAcceptedPenalty] = React.useState(false);
+  const { actions, state } = useAppState();
+
+  const openHint = () => {
+    actions.hint.openHint({
+      hintId: activeHint.hint.id,
+      onSuccess: () => setHasAcceptedPenalty(true),
+    });
+  };
 
   return (
     <Wrapper as={motion.div} exit={{ opacity: 0 }}>
       <Content
-        deg={hint.gradientDeg}
+        deg={activeHint.gradientDeg}
         as={motion.div}
-        layoutId={`story-background-${hint.i}`}
+        layoutId={`story-background-${activeHint.hint.id}`}
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 1, opacity: 0 }}
       >
-        {hasAcceptedPenalty ? (
+        {activeHint.hint.purchased ? (
           <Stack
             axis="y"
             spacing="large"
@@ -51,7 +61,35 @@ const HintStory = ({
           >
             <Stack axis="y" align="center" justify="center" style={{ flex: 1 }}>
               <StylizedText variant="title-3">
-                Sales interaction design gamification{" "}
+                {activeHint.hint.value}
+              </StylizedText>
+            </Stack>
+
+            <Stack axis="x" spacing="large" align="center" justify="center">
+              <Button
+                variant="white"
+                onClick={onCancel}
+                icon={<IoIosCloseCircle size={24} />}
+              >
+                Close
+              </Button>
+            </Stack>
+          </Stack>
+        ) : hasAcceptedPenalty ? (
+          <Stack
+            axis="y"
+            spacing="large"
+            align="space-around"
+            as={motion.div}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ delay: 0.5 }}
+            style={{ height: "100%" }}
+          >
+            <Stack axis="y" align="center" justify="center" style={{ flex: 1 }}>
+              <StylizedText variant="title-3">
+                {activeHint.hint.value}
               </StylizedText>
             </Stack>
 
@@ -95,7 +133,7 @@ const HintStory = ({
               This hint has a point penalty of:
             </Text>
 
-            <PointPenalty>-20</PointPenalty>
+            <PointPenalty>{activeHint.hint.total_score}</PointPenalty>
 
             <Text variant="body" align="center" color="white">
               Are you sure you want to view the hint?
@@ -110,9 +148,11 @@ const HintStory = ({
                 Go back
               </Button>
               <Button
-                onClick={() => setHasAcceptedPenalty(true)}
+                onClick={openHint}
                 variant="white"
                 icon={<IoIosCheckmarkCircle size={24} />}
+                disabled={state.hint.openHint === RequestState.PENDING}
+                loading={state.hint.openHint === RequestState.PENDING}
               >
                 View hint
               </Button>
