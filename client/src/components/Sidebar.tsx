@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { Stack, Divider } from "styled-layout";
 import { FiAward, FiLogOut } from "react-icons/fi";
+import { RiUser3Line } from "react-icons/ri";
 import useInterval from "react-use/lib/useInterval";
 import { motion } from "framer-motion";
 
@@ -26,6 +27,25 @@ const Sidebar = () => {
             <Logo src={logo} />
             <GradientText variant="title-2">HiveMind</GradientText>
           </Stack>
+
+          {state.user.data && (
+            <>
+              <Divider size="large" color="grey-200" />
+
+              <Stack
+                axis="x"
+                spacing="small"
+                align="center"
+                as={motion.div}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <RiUser3Line size={24} color={theme.colors["grey-800"]} />
+                <Text variant="body">{state.user.data.name}</Text>
+              </Stack>
+            </>
+          )}
 
           <Divider size="large" color="grey-200" />
 
