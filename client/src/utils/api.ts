@@ -63,3 +63,27 @@ export const addHint = async ({
   const res = await api.get(`/hints/add?${params}`);
   return res.data;
 };
+
+export const getHints = async ({ questionId }: { questionId: number }) => {
+  const params = qs.stringify({ question_id: questionId });
+  const res = await api.get(`/hints/list?${params}`);
+  return res.data;
+};
+
+export const voteHint = async ({
+  hintId,
+  score,
+}: {
+  hintId: number;
+  score: 1 | -1;
+}) => {
+  const params = qs.stringify({ hint_id: hintId, score });
+  const res = await api.get(`/hints/vote?${params}`);
+  return res.data;
+};
+
+export const openHint = async ({ hintId }: { hintId: number }) => {
+  const params = qs.stringify({ hint_id: hintId });
+  const res = await api.get(`/hints/open?${params}`);
+  return res.data;
+};

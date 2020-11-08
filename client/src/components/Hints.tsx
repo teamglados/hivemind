@@ -3,13 +3,17 @@ import { Stack } from "styled-layout";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 
-import { randBetween, range } from "../utils/common";
+import { randBetween } from "../utils/common";
+import { useAppState } from "../models";
+import { Hint } from "../models/types";
 
 type Props = {
-  onHintClick: any;
+  onHintClick: (x: { hint: Hint; gradientDeg: number }) => void;
 };
 
 const Hints = ({ onHintClick }: Props) => {
+  const { state } = useAppState();
+
   const listVariants = {
     hidden: { opacity: 0 },
     show: {
@@ -34,20 +38,23 @@ const Hints = ({ onHintClick }: Props) => {
       initial="hidden"
       animate="show"
     >
-      {range(5).map((_, i) => {
+      {state.hint.hints.map((hint) => {
         const deg = randBetween(0, 360);
+        console.log(hint.purchased);
 
         return (
-          <Story
-            key={i}
-            deg={deg}
-            as={motion.div}
-            layoutId={`story-background-${i}`}
-            variants={itemVariants}
-            onClick={() => onHintClick({ gradientDeg: deg, i })}
-          >
-            <StoryContent />
-          </Story>
+          <div style={{ opacity: hint.purchased ? 0.3 : 1 }}>
+            <Story
+              key={hint.id}
+              deg={deg}
+              as={motion.div}
+              layoutId={`story-background-${hint.id}`}
+              variants={itemVariants}
+              onClick={() => onHintClick({ gradientDeg: deg, hint })}
+            >
+              <StoryContent />
+            </Story>
+          </div>
         );
       })}
     </Stack>

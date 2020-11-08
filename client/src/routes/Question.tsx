@@ -5,8 +5,9 @@ import { IoIosSend } from "react-icons/io";
 import { RiQuestionFill, RiErrorWarningFill } from "react-icons/ri";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { AnimatePresence, AnimateSharedLayout, motion } from "framer-motion";
+import useMount from "react-use/lib/useMount";
 
-import { RequestState, AnswerState } from "../models/types";
+import { RequestState, AnswerState, Hint } from "../models/types";
 import { useAppState } from "../models";
 import theme from "../constants/theme";
 import { BackButton, Text, Textarea } from "../components/common";
@@ -14,15 +15,14 @@ import Hints from "../components/Hints";
 import CorrectAnswer from "../components/CorrectAnswer";
 import GiveHintForm from "../components/GiveHintForm";
 import HintStory from "../components/HintStory";
-import { action } from "overmind";
 
-type Hint = {
+type ActiveHint = {
   gradientDeg: number;
-  i: number;
+  hint: Hint;
 };
 
 const Question = () => {
-  const [activeHint, setActiveHint] = React.useState<null | Hint>(null);
+  const [activeHint, setActiveHint] = React.useState<null | ActiveHint>(null);
   const [answer, setAnswer] = React.useState("");
   const { state, actions } = useAppState();
   const params = useParams();
@@ -52,10 +52,26 @@ const Question = () => {
     }
   };
 
-  const handleHintReaction = (reaction: 0 | 1 | -1) => {
-    console.log("> Reaction", reaction);
-    setActiveHint(null);
+  const handleHintReaction = (score: 0 | 1 | -1) => {
+    if (!activeHint) return;
+
+    if (score === 1 || score === -1) {
+      actions.hint.voteHint({
+        hintId: activeHint.hint.id,
+        score,
+        onSuccess: () => {
+          setActiveHint(null);
+          if (question) actions.hint.getHints({ questionId: question.id });
+        },
+      });
+    } else {
+      setActiveHint(null);
+    }
   };
+
+  useMount(() => {
+    if (question) actions.hint.getHints({ questionId: question.id });
+  });
 
   React.useEffect(() => {
     if (
@@ -70,8 +86,9 @@ const Question = () => {
   React.useEffect(() => {
     return () => {
       actions.question.resetStates();
+      actions.hint.resetStates();
     };
-  }, []);
+  }, []); // eslint-disable-line
 
   return (
     <AnimateSharedLayout>
@@ -155,8 +172,8 @@ const Question = () => {
       <AnimatePresence>
         {activeHint && (
           <HintStory
-            key={activeHint.i}
-            hint={activeHint}
+            key={activeHint.hint.id}
+            activeHint={activeHint}
             onNegativeAction={() => handleHintReaction(-1)}
             onPositiveAction={() => handleHintReaction(1)}
             onCancel={() => handleHintReaction(0)}
