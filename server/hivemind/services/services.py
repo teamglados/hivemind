@@ -227,11 +227,23 @@ async def get_user(conn, user_id):
             .values(active_question_last_active=None, active_question_id=None)
         )
         duser["active_question_last_active"] = None
+        duser["active_discussion_id"] = None
 
     elif user.active_question_last_active:
         duser["is_question_active"] = await is_question_active_among_users(
             conn, user_id, user.active_question_id
         )
+        if user.active_discussion_id and user.active_question_id:
+            is_right_question = await does_question_and_discussion_match(
+                conn, user.active_discussion_id, user.active_question_id
+            )
+            if not is_right_question:
+                await conn.execute(
+                    User.update()
+                    .where(User.c.id == user_id)
+                    .values(active_discussion_id=None)
+                )
+                duser["active_discussion_id"] = None
 
     result = await conn.execute(select(Question))
     questions = result.fetchall()
@@ -300,12 +312,22 @@ async def get_discussion_id(conn, user_id, question_id):
         .group_by(User.c.active_discussion_id)
     )
     result_row = result.fetchone()
-    print("LOLOL", result_row)
     if result_row:
-        print("LOLOL", result_row.active_discussion_id)
         return result_row.active_discussion_id
     else:
         return await create_discussion(conn, user_id, question_id)
+
+
+async def does_question_and_discussion_match(conn, discussion_id, question_id):
+    result = await conn.execute(
+        select(DiscussionItem)
+        .where(DiscussionItem.c.discussion_id == discussion_id)
+        .where(DiscussionItem.c.question_id == question_id)
+    )
+    results = result.fetchall()
+    if results:
+        return True
+    return False
 
 
 async def close_discussion(conn, user_id):
