@@ -145,7 +145,7 @@ const HintStory = ({
                 variant="primary"
                 icon={<IoIosCloseCircle size={24} />}
               >
-                Go back
+                Close
               </Button>
               <Button
                 onClick={openHint}

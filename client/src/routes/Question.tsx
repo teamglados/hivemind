@@ -165,7 +165,11 @@ const Question = () => {
 
       <AnimatePresence>
         {state.question.answerState === AnswerState.GIVE_HINT && (
-          <GiveHintForm onHintSubmit={submitHint} />
+          <GiveHintForm
+            onHintSubmit={submitHint}
+            onSkip={() => navigate("/home")}
+            submittingHint={state.hint.addHint === RequestState.PENDING}
+          />
         )}
       </AnimatePresence>
 
