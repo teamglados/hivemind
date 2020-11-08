@@ -10,6 +10,7 @@ from hivemind.utils.stopwords import STOPWORDS
 ACTIVE_THRESH_SECONDS = 6000
 
 HINT_VOTE_SCORE = 1
+HINT_PRICE = 2
 
 
 def get_extended_question(question, answers):
@@ -102,11 +103,11 @@ async def add_hint(conn, user_id, question_id, value):
 
 
 async def get_hint_score(conn, hint_id):
-    result = await conn.execute(
-        select(HintItem).where(HintItem.c.hint_id == hint.id)
-    )
+    result = await conn.execute(select(HintItem).where(HintItem.c.hint_id == hint_id))
     hint_items = result.fetchall()
-    return sum([h.score for h in hint_items])
+    return max(
+        -1 * HINT_PRICE, min(sum([h.score * HINT_PRICE for h in hint_items]), 10)
+    )
 
 
 async def get_hints(conn, user_id, question_id):
@@ -135,15 +136,9 @@ async def get_hints(conn, user_id, question_id):
                 has_purchased = True
                 break
 
-        result = await conn.execute(
-            select(HintItem).where(HintItem.c.hint_id == hint.id)
-        )
-        hint_items = result.fetchall()
-        total_score = sum([h.score for h in hint_items])
-
         dhint = dict(hint)
         dhint["purchased"] = has_purchased
-        dhint["total_score"] = total_score
+        dhint["total_score"] = await get_hint_score(conn, hint.id)
         dict_hints.append(dhint)
 
     return dict_hints
@@ -197,20 +192,53 @@ async def get_user(conn, user_id):
     result = await conn.execute(select(User).where(User.c.id == user_id))
     user = result.fetchone()
 
-    user = dict(user)
-    if active_question_last_active < get_active_threshold():
+    duser = dict(user)
+    if (
+        user.active_question_last_active
+        and user.active_question_last_active < get_active_threshold()
+    ):
         await conn.execute(
             User.update()
             .where(users.c.id == user_id)
             .values(active_question_last_active=None, active_question_id=None)
         )
-        user["active_question_last_active"] = None
-    # TODO calc score
-    # - Max score from questions
-    # - Score from answers
-    # - Score from discussions
-    # - Score from hints
-    return user
+        duser["active_question_last_active"] = None
+
+    result = await conn.execute(select(Question))
+    questions = result.fetchall()
+    question_score = sum([q.score for q in questions])
+    result = await conn.execute(
+        select([Question.c.score, Answer.c.id,])
+        .select_from(Answer.outerjoin(Question))
+        .where(Answer.c.value == Question.c.answer)
+        .where(Answer.c.user_id == user_id)
+    )
+    answers = result.fetchall()
+    answer_score = sum([q.score for q in answers])
+
+    result = await conn.execute(
+        select([func.sum(Message.c.score).label("score"), Message.c.discussion_id])
+        .where(Message.c.user_id == user_id)
+        .group_by(Message.c.discussion_id)
+    )
+    message_scores = result.fetchall()
+    message_score = min(sum([q.score for q in message_scores]), 0)
+
+    result = await conn.execute(select(Hint).where(Hint.c.user_id == user_id))
+    hint_score = 0
+    for hint in result.fetchall():
+        hint_score += await get_hint_score(conn, hint.id)
+    hint_score = min(hint_score, 30)
+
+    result = await conn.execute(
+        select(HintPurchase).where(HintPurchase.c.user_id == user_id)
+    )
+    hint_purchases = result.fetchall()
+    hint_purchase_score = sum([q.score for q in hint_purchases])
+
+    duser["score"] = question_score - (message_score + hint_score + hint_purchase_score)
+    duser["answer_score"] = answer_score
+    return duser
 
 
 async def create_discussion(conn, user_id, question_id):
