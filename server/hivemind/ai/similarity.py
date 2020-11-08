@@ -8,5 +8,5 @@ def sentence_semantic_similarity(string1, string2):
         score = bert_model.predict([(string1, string2)])
         return score.item()
     except:
-        return 0
+        return 0.
 
