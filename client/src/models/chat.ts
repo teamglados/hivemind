@@ -24,6 +24,7 @@ const startChat: AsyncAction<{ questionId: number }> = async (
   { state, effects },
   { questionId }
 ) => {
+  state.chat.messages = [];
   const data = await effects.api.startChat({ questionId });
 
   if (!data.error) {
@@ -35,7 +36,7 @@ const closeChat: AsyncAction = async ({ state, effects }) => {
   const data = await effects.api.closeChat();
 
   if (!data.error) {
-    // TODO
+    state.chat.messages = [];
   }
 };
 
