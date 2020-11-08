@@ -19,6 +19,7 @@ type Props = {
   onNegativeAction: any;
   onCancel: any;
   activeHint: ActiveHint;
+  question: string;
 };
 
 const HintStory = ({
@@ -26,6 +27,7 @@ const HintStory = ({
   onNegativeAction,
   onCancel,
   activeHint,
+  question,
 }: Props) => {
   const [hasAcceptedPenalty, setHasAcceptedPenalty] = React.useState(false);
   const { actions, state } = useAppState();
@@ -59,6 +61,10 @@ const HintStory = ({
             transition={{ delay: 0.5 }}
             style={{ height: "100%" }}
           >
+            <Text variant="body" color="white" align="center">
+              {question}
+            </Text>
+
             <Stack axis="y" align="center" justify="center" style={{ flex: 1 }}>
               <StylizedText variant="title-3">
                 {activeHint.hint.value}
@@ -87,6 +93,10 @@ const HintStory = ({
             transition={{ delay: 0.5 }}
             style={{ height: "100%" }}
           >
+            <Text variant="body" color="white" align="center">
+              {question}
+            </Text>
+
             <Stack axis="y" align="center" justify="center" style={{ flex: 1 }}>
               <StylizedText variant="title-3">
                 {activeHint.hint.value}

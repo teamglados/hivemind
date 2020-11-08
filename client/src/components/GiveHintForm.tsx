@@ -39,7 +39,6 @@ const GiveHintForm = ({
         <Stack
           axis="y"
           spacing="large"
-          layout
           as={motion.div}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -52,8 +51,8 @@ const GiveHintForm = ({
 
           <Text variant="body" align="center">
             You can write a hint to help other students trying to solve this
-            exercise and to earn points and get exemptions in course marks. Other
-            students can upvote your hint to mark it as helpful. But don't
+            exercise and to earn points and get exemptions in course marks.
+            Other students can upvote your hint to mark it as helpful. But don't
             reveal the true answer! Hints too close to the original answer will
             be flagged.
           </Text>

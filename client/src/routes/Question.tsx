@@ -255,6 +255,7 @@ const Question = () => {
           {activeHint && (
             <HintStory
               key={activeHint.hint.id}
+              question={question ? question.question : ""}
               activeHint={activeHint}
               onNegativeAction={() => handleHintReaction(-1)}
               onPositiveAction={() => handleHintReaction(1)}
