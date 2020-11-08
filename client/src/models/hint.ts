@@ -87,6 +87,7 @@ const resetStates: Action = ({ state }) => {
   state.hint.getHints = RequestState.INITIAL;
   state.hint.voteHint = RequestState.INITIAL;
   state.hint.openHint = RequestState.INITIAL;
+  state.hint.hints = [];
 };
 
 export const actions = {

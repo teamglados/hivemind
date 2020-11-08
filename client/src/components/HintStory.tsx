@@ -133,7 +133,11 @@ const HintStory = ({
               This hint has a point penalty of:
             </Text>
 
-            <PointPenalty>{activeHint.hint.total_score}</PointPenalty>
+            <PointPenalty>
+              {activeHint.hint.total_score < 0
+                ? 0
+                : activeHint.hint.total_score}
+            </PointPenalty>
 
             <Text variant="body" align="center" color="white">
               Are you sure you want to view the hint?
