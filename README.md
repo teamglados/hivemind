@@ -4,6 +4,8 @@
 
 > Virtual peer learning environment for the social distancing era, allowing students to come together and interact in real-time to get the benefits of physical exercise groups. Help each other pass the course through discussion and story-like hints. Study, solve problems and learn.
 
+## Try the live demo!
+
 [[Link to live application]](https://www.hivemindlive.com) hosted at
 [www.hivemindlive.com](https://www.hivemindlive.com)
 
