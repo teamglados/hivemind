@@ -196,7 +196,7 @@
 			"id": 2,
 			"question_id": 1,
 			"user_id": 2,
-			"value": "The answer is sillier than you think..."
+			"value": "The answer and couple of letters too much are already in the question."
 		},
 		{
 			"id": 3,
@@ -220,7 +220,7 @@
 			"id": 6,
 			"question_id": 3,
 			"user_id": 2,
-			"value": "Look closely and you'll see the correct answer"
+			"value": "You have two of these and they help you to see the world."
 		},
 		{
 			"id": 7,
