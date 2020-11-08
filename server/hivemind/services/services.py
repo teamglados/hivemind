@@ -278,7 +278,7 @@ async def vote_message(conn, message_id, score):
 
 
 async def open_hint(conn, user_id, hint_id):
-    score = await get_hint_score(conn, hint_id)
+    score = -1 * await get_hint_score(conn, hint_id)
     result = await conn.execute(
         HintPurchase.insert().values(user_id=user_id, hint_id=hint_id, score=score)
     )
