@@ -8,7 +8,7 @@ from hivemind.models import *
 from hivemind.utils.stopwords import STOPWORDS
 from hivemind.ai import *
 
-ACTIVE_THRESH_SECONDS = 60
+ACTIVE_THRESH_SECONDS = 70
 
 HINT_VOTE_SCORE = 1
 HINT_PRICE = 2
