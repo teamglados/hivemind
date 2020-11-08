@@ -92,6 +92,7 @@ async def is_question_active_among_users(conn, user_id, question_id):
 
 
 async def add_hint(conn, user_id, question_id, value):
+    # TODO check answer not in it
     result = await conn.execute(
         Hint.insert()
         .values(user_id=user_id, question_id=question_id, value=value)
@@ -108,7 +109,36 @@ async def get_hints(conn, user_id, question_id):
         .where(Hint.c.question_id == question_id)
     )
 
-    return [dict(r) for r in result.fetchall()]
+    hints = result.fetchall()
+    hint_ids = [h.id for h in hints]
+
+    result = await conn.execute(
+        select(HintPurchase)
+        .where(HintPurchase.c.user_id == user_id)
+        .where(HintPurchase.c.hint_id.in_(hint_ids))
+    )
+    hint_purchases = result.fetchall()
+
+    dict_hints = []
+    for hint in hints:
+        has_purchased = False
+        for hp in hint_purchases:
+            if hint.id == hp.hint_id:
+                has_purchased = True
+                break
+
+        result = await conn.execute(
+            select(HintItem).where(HintItem.c.hint_id == hint.id)
+        )
+        hint_items = result.fetchall()
+        total_score = sum([h.score for h in hint_items])
+
+        dhint = dict(hint)
+        dhint["purchased"] = has_purchased
+        dhint["total_score"] = total_score
+        dict_hints.append(dhint)
+
+    return dict_hints
 
 
 async def vote_hint(conn, user_id, hint_id, vote_type):
@@ -240,3 +270,18 @@ async def vote_message(conn, message_id, vote_type):
     message = dict(message)
     message["score"] = score
     return message
+
+
+async def open_hint(conn, user_id, hint_id, score):
+    result = await conn.execute(
+        HintPurchase.insert().values(user_id=user_id, hint_id=hint_id, score=score)
+    )
+
+    return ""
+
+
+async def get_hint_purchases(conn, user_id):
+    result = await conn.execute(
+        select(HintPurchase).where(HintPurchase.c.id == user_id)
+    )
+    return [dict(r) for r in result.fetchall()]
