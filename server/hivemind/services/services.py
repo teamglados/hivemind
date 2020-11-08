@@ -93,7 +93,16 @@ async def is_question_active_among_users(conn, user_id, question_id):
 
 
 async def add_hint(conn, user_id, question_id, value):
-    # TODO check answer not in it
+    words = value.lower().strip().split()
+    stops = set(STOPWORDS)
+    meaningful_words = [w for w in words if not w in stops]
+
+    result = await conn.execute(select(Question).where(Question.c.id == question_id))
+    question = result.fetchone()
+
+    if question.answer in meaningful_words:
+        raise ValueError("Answer part of the hint")
+
     result = await conn.execute(
         Hint.insert()
         .values(user_id=user_id, question_id=question_id, value=value)
