@@ -31,45 +31,36 @@ const Hints = ({ onHintClick }: Props) => {
   };
 
   return (
-    <Wrapper>
-      <Stack
-        axis="x"
-        spacing="normal"
-        as={motion.div}
-        variants={listVariants}
-        initial="hidden"
-        animate="show"
-      >
-        {state.hint.hints.map((hint) => {
-          const deg = randBetween(0, 360);
+    <Stack
+      axis="x"
+      spacing="normal"
+      as={motion.div}
+      variants={listVariants}
+      initial="hidden"
+      animate="show"
+    >
+      {state.hint.hints.map((hint) => {
+        const deg = randBetween(0, 360);
 
-          return (
-            <div key={hint.id} style={{ opacity: hint.purchased ? 0.3 : 1 }}>
-              <Story
-                key={hint.id}
-                deg={deg}
-                as={motion.div}
-                layoutId={`story-background-${hint.id}`}
-                variants={itemVariants}
-                onClick={() => onHintClick({ gradientDeg: deg, hint })}
-              >
-                <StoryContent>
-                  <IoMdHelp size={16} color="#fff" />
-                </StoryContent>
-              </Story>
-            </div>
-          );
-        })}
-      </Stack>
-    </Wrapper>
+        return (
+          <div key={hint.id} style={{ opacity: hint.purchased ? 0.3 : 1 }}>
+            <Story
+              deg={deg}
+              as={motion.div}
+              layoutId={`story-background-${hint.id}`}
+              variants={itemVariants}
+              onClick={() => onHintClick({ gradientDeg: deg, hint })}
+            >
+              <StoryContent>
+                <IoMdHelp size={16} color="#fff" />
+              </StoryContent>
+            </Story>
+          </div>
+        );
+      })}
+    </Stack>
   );
 };
-
-const Wrapper = styled.div`
-  width: 100%;
-  max-width: 100%;
-  overflow: auto;
-`;
 
 const Story = styled.button<{ deg: number }>`
   cursor: pointer;
