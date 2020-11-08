@@ -89,10 +89,9 @@ async def is_question_active_among_users(conn, user_id, question_id):
         .where(User.c.active_question_last_active >= get_active_threshold())
     )
 
-    ret = {"is_active": False}
     if results.fetchone():
-        ret["is_active"] = True
-    return ret
+        return True
+    return False
 
 
 async def add_hint(conn, user_id, question_id, value):
@@ -208,12 +207,15 @@ async def get_user(conn, user_id):
     user = result.fetchone()
 
     result = await conn.execute(
-        select([func.count(User.c.active_discussion_id)])
-        .where(User.c.active_discussion_id == user.active_discussion_id)
+        select([func.count(User.c.active_discussion_id)]).where(
+            User.c.active_discussion_id == user.active_discussion_id
+        )
     )
     chat_user_count = result.fetchone()
     chat_active = True if chat_user_count and chat_user_count[0] > 1 else False
     duser = dict(user)
+    duser["is_question_active"] = False
+
     if (
         user.active_question_last_active
         and user.active_question_last_active < get_active_threshold()
@@ -224,6 +226,11 @@ async def get_user(conn, user_id):
             .values(active_question_last_active=None, active_question_id=None)
         )
         duser["active_question_last_active"] = None
+
+    elif user.active_question_last_active:
+        duser["is_question_active"] = await is_question_active_among_users(
+            conn, user_id, user.active_question_id
+        )
 
     result = await conn.execute(select(Question))
     questions = result.fetchall()
@@ -264,6 +271,7 @@ async def get_user(conn, user_id):
     duser["hint_purchase_score"] = hint_purchase_score
     duser["max_score"] = question_score
     duser["chat_active"] = chat_active
+
     return duser
 
 
@@ -351,5 +359,9 @@ async def get_hint_purchases(conn, user_id):
 
 
 async def add_discussion_to_user(conn, user_id, discussion_id):
-    await conn.execute(User.update().values(active_discussion_id=discussion_id).where(User.c.id == user_id))
+    await conn.execute(
+        User.update()
+        .values(active_discussion_id=discussion_id)
+        .where(User.c.id == user_id)
+    )
     return ""
