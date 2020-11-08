@@ -16,7 +16,7 @@ const Sidebar = () => {
 
   useInterval(() => {
     actions.user.getUser();
-  }, 2000);
+  }, 1000);
 
   return (
     <Wrapper>
@@ -39,11 +39,11 @@ const Sidebar = () => {
               <Text variant="overline">Exercises</Text>
 
               <ExerciseList>
-                {range(5).map((index) => (
-                  <ExerciseItem key={index} active={index === 2}>
+                {range(3).map((index) => (
+                  <ExerciseItem key={index} active={index === 0}>
                     <Text
                       variant="button-text"
-                      color={index === 2 ? "grey-800" : "grey-600"}
+                      color={index === 0 ? "grey-800" : "grey-600"}
                     >
                       Exercise {index + 1}
                     </Text>
@@ -77,7 +77,7 @@ const Sidebar = () => {
 
               <Stack axis="x" spacing="xsmall" align="center">
                 <GradientText variant="title-3">
-                  +{state.user.data.hint_score}
+                  {state.user.data.hint_score}
                 </GradientText>
                 <Text variant="body-small">from hints you have submitted</Text>
               </Stack>

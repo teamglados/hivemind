@@ -29,7 +29,7 @@ const Chat = () => {
 
   useInterval(() => {
     if (discussionId) actions.chat.getMessages({ discussionId });
-  }, 2000);
+  }, 1000);
 
   return (
     <Wrapper>
