@@ -105,6 +105,9 @@ async def add_hint(conn, user_id, question_id, value):
 async def get_hint_score(conn, hint_id):
     result = await conn.execute(select(HintItem).where(HintItem.c.hint_id == hint_id))
     hint_items = result.fetchall()
+    # always at least hint price
+    if not hint_items:
+        return -1 * HINT_PRICE
     return max(
         -1 * HINT_PRICE, min(sum([h.score * HINT_PRICE for h in hint_items]), 10)
     )
