@@ -6,6 +6,7 @@ from sqlalchemy.sql import select
 
 from hivemind.models import *
 from hivemind.utils.stopwords import STOPWORDS
+from hivemind.ai import *
 
 # TODO change back to 60
 ACTIVE_THRESH_SECONDS = 6000
@@ -16,6 +17,8 @@ HINT_PRICE = 2
 HINT_MAX = 70
 MESSAGE_MAX = 20
 
+PROFANITY_THRESHOLD = 0.5
+SIMILARITY_THRESHOLD = 2.0
 
 def get_extended_question(question, answers):
     question_answers = [a for a in answers if question.id == a.question_id]
@@ -104,7 +107,13 @@ async def add_hint(conn, user_id, question_id, value):
     question = result.fetchone()
 
     if question.answer in meaningful_words:
-        raise ValueError("Answer part of the hint")
+        raise ValueError("True answer is part of the hint text")
+
+    if sentence_profanity_prob(value) > PROFANITY_THRESHOLD:
+        raise ValueError("Profanity cannot be allowed")
+
+    if sentence_semantic_similarity(value, question.answer) > SIMILARITY_THRESHOLD:
+        raise ValueError("Hint semantically too close to the true answer")
 
     result = await conn.execute(
         Hint.insert()

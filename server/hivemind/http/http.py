@@ -38,7 +38,7 @@ def get_api_response(request, **kwargs):
 def get_api_result_json(result):
     return sanic.response.HTTPResponse(
         get_json_string(result),
-        # headers={"Access-Control-Allow-Origin": "*"},
+        #headers={"Access-Control-Allow-Origin": "*"},
         content_type='application/json'
     )
 
@@ -53,11 +53,14 @@ def create_api_error_handler():
     class handler(sanic.handlers.ErrorHandler):
         def default(self, request, exception):
             super().default(request, exception)
-            return dict(
-                error=dict(
-                    type=type(exception).__name__,
-                    message=str(exception)
-                )
+            result = get_api_response(request)
+            result['error'] = dict(
+                type=type(exception).__name__,
+                message=str(exception)
+            ) 
+            return sanic.response.HTTPResponse(get_json_string(result),
+                #headers={"Access-Control-Allow-Origin": "*"},
+                content_type='application/json'
             )
     return handler()
 
