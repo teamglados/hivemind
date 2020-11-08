@@ -14,6 +14,7 @@ import Hints from "../components/Hints";
 import CorrectAnswer from "../components/CorrectAnswer";
 import GiveHintForm from "../components/GiveHintForm";
 import HintStory from "../components/HintStory";
+import { action } from "overmind";
 
 type Hint = {
   gradientDeg: number;
@@ -46,11 +47,9 @@ const Question = () => {
   };
 
   const submitHint = (hint: string) => {
-    console.log("> Hint", hint);
-    // setAnswerState(AnswerState.INITIAL);
-    setTimeout(() => {
-      navigate("/home");
-    }, 1000);
+    if (question) {
+      actions.hint.addHint({ navigate, hint, questionId: question.id });
+    }
   };
 
   const handleHintReaction = (reaction: 0 | 1 | -1) => {
@@ -59,8 +58,20 @@ const Question = () => {
   };
 
   React.useEffect(() => {
-    if (!question) navigate("/home");
-  }, [question, navigate]);
+    if (
+      !question ||
+      (question &&
+        question.is_correct &&
+        state.question.answerState === AnswerState.INITIAL)
+    )
+      navigate("/home");
+  }, [question, state.question.answerState, navigate]);
+
+  React.useEffect(() => {
+    return () => {
+      actions.question.resetStates();
+    };
+  }, []);
 
   return (
     <AnimateSharedLayout>
