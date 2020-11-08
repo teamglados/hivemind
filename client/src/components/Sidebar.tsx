@@ -2,16 +2,20 @@ import React from "react";
 import styled from "styled-components";
 import { Stack, Divider } from "styled-layout";
 import { FiAward, FiLogOut } from "react-icons/fi";
+import useInterval from "react-use/lib/useInterval";
 
 import logo from "../images/logo.svg";
 import { range } from "../utils/common";
 import { Button, GradientText, Text } from "./common";
-
 import theme from "../constants/theme";
 import { useAppState } from "../models";
 
 const Sidebar = () => {
-  const { actions } = useAppState();
+  const { actions, state } = useAppState();
+
+  useInterval(() => {
+    actions.user.getUser();
+  }, 2000);
 
   return (
     <Wrapper>
@@ -49,21 +53,29 @@ const Sidebar = () => {
           </Stack>
         </Stack>
 
-        <Divider size="large" color="grey-200" />
+        {state.user.data && (
+          <>
+            <Divider size="large" color="grey-200" />
 
-        <Stack axis="y" spacing="small">
-          <Text variant="overline">Your course score</Text>
+            <Stack axis="y" spacing="small">
+              <Text variant="overline">Your course score</Text>
 
-          <Stack axis="x" spacing="xsmall" align="center">
-            <GradientText variant="title-2">420</GradientText>
-            <FiAward size={32} color={theme.colors.secondary} />
-          </Stack>
+              <Stack axis="x" spacing="xsmall" align="center">
+                <GradientText variant="title-2">
+                  {state.user.data.score}
+                </GradientText>
+                <FiAward size={32} color={theme.colors.secondary} />
+              </Stack>
 
-          <Stack axis="x" spacing="xsmall" align="center">
-            <GradientText variant="title-3">+55</GradientText>
-            <Text variant="body-small">from hints you have submitted</Text>
-          </Stack>
-        </Stack>
+              <Stack axis="x" spacing="xsmall" align="center">
+                <GradientText variant="title-3">
+                  +{state.user.data.hint_score}
+                </GradientText>
+                <Text variant="body-small">from hints you have submitted</Text>
+              </Stack>
+            </Stack>
+          </>
+        )}
 
         <Divider size="large" color="grey-200" />
 
