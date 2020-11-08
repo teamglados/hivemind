@@ -57,6 +57,12 @@ export const answerQuestion = async ({
   return res.data;
 };
 
+export const setQuestionActive = async (id: number) => {
+  const params = qs.stringify({ question_id: id });
+  const res = await api.get(`/users/question?${params}`);
+  return res.data;
+};
+
 export const addHint = async ({
   questionId,
   hint,
@@ -90,5 +96,38 @@ export const voteHint = async ({
 export const openHint = async ({ hintId }: { hintId: number }) => {
   const params = qs.stringify({ hint_id: hintId });
   const res = await api.get(`/hints/open?${params}`);
+  return res.data;
+};
+
+export const startChat = async ({ questionId }: { questionId: number }) => {
+  const params = qs.stringify({ question_id: questionId });
+  const res = await api.get(`/discuss/start?${params}`);
+  return res.data;
+};
+
+export const closeChat = async () => {
+  const res = await api.get("/discuss/close");
+  return res.data;
+};
+
+export const addChatMessage = async ({
+  discussionId,
+  message,
+}: {
+  discussionId: string;
+  message: string;
+}) => {
+  const params = qs.stringify({ discussion_id: discussionId, value: message });
+  const res = await api.get(`/message/add?${params}`);
+  return res.data;
+};
+
+export const getChatMessages = async ({
+  discussionId,
+}: {
+  discussionId: string;
+}) => {
+  const params = qs.stringify({ discussion_id: discussionId });
+  const res = await api.get(`/message/list?${params}`);
   return res.data;
 };

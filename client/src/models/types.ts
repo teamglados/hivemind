@@ -33,13 +33,24 @@ export type Hint = {
 };
 
 export type UserData = {
-  active_discussion_id: null | number;
+  active_discussion_id: null | string;
   active_question_id: null | number;
   active_question_last_active: null | number;
   answer_score: number;
   created_at: string;
+  chat_active: boolean;
   hint_score: number;
   id: number;
+  is_question_active: boolean;
   name: string;
   score: number;
+};
+
+export type ChatMessage = {
+  id: number;
+  value: string;
+  score: number;
+  discussion_id: string;
+  user_id: number;
+  created_at: string;
 };

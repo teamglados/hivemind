@@ -55,6 +55,10 @@ const setAnswerState: Action<AnswerState> = ({ state }, answerState) => {
   state.question.answerState = answerState;
 };
 
+const setActive: AsyncAction<number> = async ({ effects }, id) => {
+  await effects.api.setQuestionActive(id);
+};
+
 const resetStates: Action = ({ state }) => {
   state.question.answerState = AnswerState.INITIAL;
   state.question.answerQuestion = RequestState.INITIAL;
@@ -64,5 +68,6 @@ export const actions = {
   getQuestions,
   answerQuestion,
   setAnswerState,
+  setActive,
   resetStates,
 };

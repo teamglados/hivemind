@@ -3,17 +3,25 @@ import { Stack, Divider } from "styled-layout";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import { FaHandHoldingHeart } from "react-icons/fa";
+import { RiErrorWarningFill } from "react-icons/ri";
 import { BiSkipNextCircle } from "react-icons/bi";
 
 import { Button, Text, Textarea } from "./common";
+import theme from "../constants/theme";
 
 type Props = {
   onHintSubmit: any;
   onSkip: any;
   submittingHint: boolean;
+  errorMessage: null | string;
 };
 
-const GiveHintForm = ({ onHintSubmit, onSkip, submittingHint }: Props) => {
+const GiveHintForm = ({
+  onHintSubmit,
+  onSkip,
+  submittingHint,
+  errorMessage,
+}: Props) => {
   const [hint, setHint] = React.useState("");
 
   const submitAnswer = (event: any) => {
@@ -43,11 +51,26 @@ const GiveHintForm = ({ onHintSubmit, onSkip, submittingHint }: Props) => {
           </Text>
 
           <Text variant="body" align="center">
-            Twitter non-disclosure agreement vesting period user experience
-            direct mailing channels iPad social media interaction design return
-            on investment. Network effects success technology alpha angel
-            investor startup.
+            You can write a hint to help other students trying to solve this
+            exercise and to earn points and get exemptions in course marks. Other
+            students can upvote your hint to mark it as helpful. But don't
+            reveal the true answer! Hints too close to the original answer will
+            be flagged.
           </Text>
+
+          {errorMessage && (
+            <Stack
+              axis="x"
+              spacing="small"
+              as={motion.div}
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+            >
+              <RiErrorWarningFill size={22} color={theme.colors.secondary} />
+              <Text variant="body">{errorMessage}</Text>
+            </Stack>
+          )}
 
           <Textarea
             onSubmit={submitAnswer}

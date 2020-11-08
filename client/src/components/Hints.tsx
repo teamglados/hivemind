@@ -2,6 +2,7 @@ import * as React from "react";
 import { Stack } from "styled-layout";
 import styled from "styled-components";
 import { motion } from "framer-motion";
+import { IoMdHelp } from "react-icons/io";
 
 import { randBetween } from "../utils/common";
 import { useAppState } from "../models";
@@ -30,35 +31,45 @@ const Hints = ({ onHintClick }: Props) => {
   };
 
   return (
-    <Stack
-      axis="x"
-      spacing="normal"
-      as={motion.div}
-      variants={listVariants}
-      initial="hidden"
-      animate="show"
-    >
-      {state.hint.hints.map((hint) => {
-        const deg = randBetween(0, 360);
+    <Wrapper>
+      <Stack
+        axis="x"
+        spacing="normal"
+        as={motion.div}
+        variants={listVariants}
+        initial="hidden"
+        animate="show"
+      >
+        {state.hint.hints.map((hint) => {
+          const deg = randBetween(0, 360);
 
-        return (
-          <div key={hint.id} style={{ opacity: hint.purchased ? 0.3 : 1 }}>
-            <Story
-              key={hint.id}
-              deg={deg}
-              as={motion.div}
-              layoutId={`story-background-${hint.id}`}
-              variants={itemVariants}
-              onClick={() => onHintClick({ gradientDeg: deg, hint })}
-            >
-              <StoryContent />
-            </Story>
-          </div>
-        );
-      })}
-    </Stack>
+          return (
+            <div key={hint.id} style={{ opacity: hint.purchased ? 0.3 : 1 }}>
+              <Story
+                key={hint.id}
+                deg={deg}
+                as={motion.div}
+                layoutId={`story-background-${hint.id}`}
+                variants={itemVariants}
+                onClick={() => onHintClick({ gradientDeg: deg, hint })}
+              >
+                <StoryContent>
+                  <IoMdHelp size={16} color="#fff" />
+                </StoryContent>
+              </Story>
+            </div>
+          );
+        })}
+      </Stack>
+    </Wrapper>
   );
 };
+
+const Wrapper = styled.div`
+  width: 100%;
+  max-width: 100%;
+  overflow: auto;
+`;
 
 const Story = styled.button<{ deg: number }>`
   cursor: pointer;
@@ -84,6 +95,13 @@ const StoryContent = styled.div`
   border-radius: inherit;
   background-color: rgba(255, 255, 255, 0.5);
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  svg {
+    opacity: 0.8;
+  }
 `;
 
 export default React.memo(Hints);
