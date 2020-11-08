@@ -244,6 +244,7 @@ async def get_user(conn, user_id):
     duser["hint_score"] = hint_score
     duser["message_score"] = message_score
     duser["hint_purchase_score"] = hint_purchase_score
+    duser["max_score"] = question_score
     return duser
 
 
