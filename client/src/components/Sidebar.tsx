@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Stack, Divider } from "styled-layout";
 import { FiAward, FiLogOut } from "react-icons/fi";
 import useInterval from "react-use/lib/useInterval";
+import { motion } from "framer-motion";
 
 import logo from "../images/logo.svg";
 import { range } from "../utils/common";
@@ -57,7 +58,14 @@ const Sidebar = () => {
           <>
             <Divider size="large" color="grey-200" />
 
-            <Stack axis="y" spacing="small">
+            <Stack
+              axis="y"
+              spacing="small"
+              as={motion.div}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
               <Text variant="overline">Your course score</Text>
 
               <Stack axis="x" spacing="xsmall" align="center">
