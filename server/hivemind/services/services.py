@@ -236,8 +236,11 @@ async def get_user(conn, user_id):
     hint_purchases = result.fetchall()
     hint_purchase_score = sum([q.score for q in hint_purchases])
 
-    duser["score"] = question_score - (message_score + hint_score + hint_purchase_score)
+    duser["score"] = answer_score + message_score + hint_score + hint_purchase_score
     duser["answer_score"] = answer_score
+    duser["hint_score"] = hint_score
+    duser["message_score"] = message_score
+    duser["hint_purchase_score"] = hint_purchase_score
     return duser
 
 
