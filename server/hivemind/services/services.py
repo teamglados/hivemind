@@ -20,6 +20,8 @@ MESSAGE_MAX = 20
 PROFANITY_THRESHOLD = 0.5
 SIMILARITY_THRESHOLD = 2.0
 
+MAX_N_HINTS = 5
+
 def get_extended_question(question, answers):
     question_answers = [a for a in answers if question.id == a.question_id]
 
@@ -165,7 +167,7 @@ async def get_hints(conn, user_id, question_id):
         dhint["total_score"] = await get_hint_score(conn, hint.id)
         dict_hints.append(dhint)
 
-    return dict_hints
+    return sorted(dict_hints, key=lambda x: x["total_score"], reverse=True)[0:MAX_N_HINTS]
 
 
 async def vote_hint(conn, user_id, hint_id, score):
