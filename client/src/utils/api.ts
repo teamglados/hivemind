@@ -29,6 +29,11 @@ api.interceptors.response.use(
   }
 );
 
+export const getUser = async () => {
+  const res = await api.get("/users");
+  return res.data;
+};
+
 export const login = async (name: string) => {
   const params = qs.stringify({ name });
   const res = await api.post(`/login?${params}`);

@@ -2,13 +2,24 @@ import { AsyncAction, Action } from "overmind";
 import { NavigateFunction } from "react-router";
 
 import { getPersistedUser } from "../utils/storage";
+import { UserData } from "./types";
 
 type State = {
   name: null | string;
+  data: null | UserData;
 };
 
 export const state: State = {
   name: getPersistedUser(),
+  data: null,
+};
+
+const getUser: AsyncAction = async ({ state, effects }) => {
+  const data = await effects.api.getUser();
+
+  if (!data.error) {
+    state.user.data = data.result;
+  }
 };
 
 const login: AsyncAction<{ user: string; navigate: NavigateFunction }> = async (
@@ -36,4 +47,5 @@ const logout: Action = ({ state }) => {
 export const actions = {
   login,
   logout,
+  getUser,
 };

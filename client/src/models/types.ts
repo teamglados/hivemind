@@ -31,3 +31,15 @@ export type Hint = {
   user_id: number;
   value: string;
 };
+
+export type UserData = {
+  active_discussion_id: null | number;
+  active_question_id: null | number;
+  active_question_last_active: null | number;
+  answer_score: number;
+  created_at: string;
+  hint_score: number;
+  id: number;
+  name: string;
+  score: number;
+};
