@@ -7,6 +7,7 @@ from sqlalchemy.sql import select
 from hivemind.models import *
 from hivemind.utils.stopwords import STOPWORDS
 
+# TODO change back to 60
 ACTIVE_THRESH_SECONDS = 6000
 
 HINT_VOTE_SCORE = 1
