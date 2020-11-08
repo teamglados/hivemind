@@ -101,6 +101,14 @@ async def add_hint(conn, user_id, question_id, value):
     return result.fetchone()[0]
 
 
+async def get_hint_score(conn, hint_id):
+    result = await conn.execute(
+        select(HintItem).where(HintItem.c.hint_id == hint.id)
+    )
+    hint_items = result.fetchall()
+    return sum([h.score for h in hint_items])
+
+
 async def get_hints(conn, user_id, question_id):
     # TODO add if voted already
     result = await conn.execute(
@@ -269,7 +277,8 @@ async def vote_message(conn, message_id, score):
     return message
 
 
-async def open_hint(conn, user_id, hint_id, score):
+async def open_hint(conn, user_id, hint_id):
+    score = await get_hint_score(conn, hint_id)
     result = await conn.execute(
         HintPurchase.insert().values(user_id=user_id, hint_id=hint_id, score=score)
     )

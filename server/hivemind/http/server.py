@@ -111,8 +111,7 @@ async def api_method_hints_vote(request):
 async def api_method_hints_open(request):
     user_id = get_user_id_from_token(request)
     hint_id = int(request.ctx.params.get("hint_id"))
-    score = float(request.ctx.params.get("score"))
-    return await services.open_hint(request.ctx.conn, user_id, hint_id, score)
+    return await services.open_hint(request.ctx.conn, user_id, hint_id)
 
 @app.route("/hintpurchases/list", methods=["GET"])
 async def api_method_get_hint_purchases(request):
