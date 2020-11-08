@@ -8,18 +8,22 @@ from hivemind.models import *
 from hivemind.config import SQLALCHEMY_DATABASE_URI
 from hivemind.runtime import metadata, engine
 
+
 def create_user_items(*names, idstart=1):
     items = list()
     uid = idstart
     for name in names:
-        items.append(dict(
-            id=uid,
-            name=name,
-            active_question_id=None,
-            active_question_last_active=None
-        ))
+        items.append(
+            dict(
+                id=uid,
+                name=name,
+                active_question_id=None,
+                active_question_last_active=None,
+            )
+        )
         uid += 1
     return items
+
 
 async def pg_init_tables():
     """ drop and re-initialize all tables described by metadata """
@@ -27,61 +31,59 @@ async def pg_init_tables():
         await conn.run_sync(metadata.drop_all)
         await conn.run_sync(metadata.create_all)
 
+
 async def pg_init_tables_data(dummy_data_dict):
     """ initialize table data """
     async with engine.connect() as conn:
 
         await conn.execute(
-            User.insert(),
-            create_user_items(*dummy_data_dict.pop('names'))
+            User.insert(), create_user_items(*dummy_data_dict.pop("names"))
         )
 
-        await conn.execute(
-            Question.insert(),
-            dummy_data_dict.get('questions')
-        )
+        await conn.execute(Question.insert(), dummy_data_dict.get("questions"))
+
+        await conn.execute(Hint.insert(), dummy_data_dict.get("hints"))
+
+        await conn.execute(HintItem.insert(), dummy_data_dict.get("hint_items"))
 
         await conn.execute(
-            Hint.insert(),
-            dummy_data_dict.get('hints')
+            DiscussionItem.insert(), dummy_data_dict.get("discussion_items")
         )
 
-        await conn.execute(
-            HintItem.insert(),
-            dummy_data_dict.get('hint_items')
-        )
-
-        await conn.execute(
-            DiscussionItem.insert(),
-            dummy_data_dict.get('discussion_items')
-        )
-
-        await conn.execute(
-            Message.insert(),
-            dummy_data_dict.get('messages')
-        )
+        await conn.execute(Message.insert(), dummy_data_dict.get("messages"))
 
         # Example: returning creation id
-        #result = await conn.execute(
+        # result = await conn.execute(
         #    User.insert().returning(User.c.id), [{"name": "some name 1"}],
-        #)
-        #user_id = result.fetchone()[0]
-        for table_seq_name in ["answer_id_seq", "discussion_item_id_seq", "hint_id_seq", "hint_item_id_seq", "message_id_seq", "question_id_seq", "user_id_seq"]:
+        # )
+        # user_id = result.fetchone()[0]
+        for table_seq_name in [
+            "answer_id_seq",
+            "discussion_item_id_seq",
+            "hint_id_seq",
+            "hint_item_id_seq",
+            "message_id_seq",
+            "question_id_seq",
+            "user_id_seq",
+            "hint_purchase_id_seq",
+        ]:
             sql_query = text(f"ALTER SEQUENCE {table_seq_name} RESTART WITH 1000;")
             await conn.execute(sql_query)
         await conn.commit()
         return
 
+
 async def pg_run_all(dummy_data_dict=None):
-    print('Initialize tables...')
+    print("Initialize tables...")
     await pg_init_tables()
 
     if dummy_data_dict is not None:
-        print('Initialize dummy data...')
+        print("Initialize dummy data...")
         await pg_init_tables_data(dummy_data_dict)
 
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='HiveMind database init tools')
+    parser = argparse.ArgumentParser(description="HiveMind database init tools")
     parser.add_argument(
         "--dummy",
         help="input dummy data filename",
