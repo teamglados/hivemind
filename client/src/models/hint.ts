@@ -4,6 +4,7 @@ import { RequestState, Hint } from "./types";
 
 type State = {
   hints: Hint[];
+  addHintError: null | string;
   getHints: RequestState;
   addHint: RequestState;
   openHint: RequestState;
@@ -12,6 +13,7 @@ type State = {
 
 export const state: State = {
   hints: [],
+  addHintError: null,
   getHints: RequestState.INITIAL,
   addHint: RequestState.INITIAL,
   openHint: RequestState.INITIAL,
@@ -39,6 +41,8 @@ const addHint: AsyncAction<{
   questionId: number;
 }> = async ({ state, effects }, { hint, questionId, navigate }) => {
   state.hint.addHint = RequestState.PENDING;
+  state.hint.addHintError = null;
+
   const data = await effects.api.addHint({ questionId, hint });
 
   if (!data.error) {
@@ -46,6 +50,7 @@ const addHint: AsyncAction<{
     setTimeout(() => navigate("/home"), 1000);
   } else {
     state.hint.addHint = RequestState.ERROR;
+    state.hint.addHintError = data.error.message;
   }
 };
 
@@ -88,6 +93,7 @@ const resetStates: Action = ({ state }) => {
   state.hint.voteHint = RequestState.INITIAL;
   state.hint.openHint = RequestState.INITIAL;
   state.hint.hints = [];
+  state.hint.addHintError = null;
 };
 
 export const actions = {
