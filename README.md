@@ -4,10 +4,9 @@
 
 > Virtual peer learning environment for the social distancing era, allowing students to come together and interact in real-time to get the benefits of physical exercise groups. Help each other pass the course through discussion and story-like hints. Study, solve problems and learn.
 
-## Try the live demo!
+## See it in action
 
-[[Link to live application]](https://www.hivemindlive.com) hosted at
-[www.hivemindlive.com](https://www.hivemindlive.com)
+[[Video]](https://vimeo.com/476775587) [[Source]](https://github.com/teamglados/hivemind) [[Webapp]](https://www.hivemindlive.com) (disabled)
 
 ## Description
 
@@ -54,10 +53,3 @@ The total course grade is affected by the student's activity through discussions
 Users can't just exploit the hints to complete the full course as each hint adds a penalty to the total score that may not be enough to complete the course in the end. They are encouraged to engage in discussions to get and share new ideas with others. Scoring extra points can provide exemptions. Earning extra scores through helping others also compensates users that have difficulties.
 
 Additionally, advanced users are allowed to proceed in their own pace as none of the features are mandatory to completing the course.
-
-## Code
-
-Code is open and separated to two main branches:
-
-- User interface: branch/client
-- Backend interface: branch/master
